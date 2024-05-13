@@ -13,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     QImage imagen_fondo("C:/Users/JuanM/OneDrive/Desktop/Carlos/Proyecto info2/PROYECTO_INFO2/escenario.png");
     QBrush fondo_escenario(imagen_fondo);
     ui -> graphicsView -> setBackgroundBrush(fondo_escenario);
-    scene_3->setSceneRect(1400,550,-200,30);
-    ui-> graphicsView->scale(0.23,0.49);
+    scene_3->setSceneRect(0,30,1920,1080);
+    ui-> graphicsView->scale(0.95,0.95);
 
 
     QPixmap pixMap ("C:/Users/JuanM/OneDrive/Desktop/Carlos/Proyecto info2/PROYECTO_INFO2/jugador6.png");
