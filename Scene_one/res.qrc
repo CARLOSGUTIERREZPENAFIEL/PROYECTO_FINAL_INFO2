@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>velocimetro.png</file>
+        <file>fondo_car.jpg</file>
+    </qresource>
+</RCC>
