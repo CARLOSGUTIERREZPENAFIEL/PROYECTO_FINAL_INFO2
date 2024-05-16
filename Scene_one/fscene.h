@@ -28,6 +28,7 @@ private:
     int vel_x;
     int contador_posicion_y;
 
+    QList<car*> obst;
     QSet<int> keysPressed;
     MainWindow *mainWindow;
 };
