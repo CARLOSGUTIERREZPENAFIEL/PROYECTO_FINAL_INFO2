@@ -19,14 +19,17 @@ protected:
     void keyReleaseEvent(QKeyEvent *e) override;
 private slots:
     void acelerar();
+    void spawnObstacle();
 private:
     QGraphicsPixmapItem *mCarretera;
     Car *car;
     QTimer *aceleracion;
+    QTimer *obstacleTimer; // Timer para los obstáculos
 
     int vel_y;
     int vel_x;
     int contador_posicion_y;
+    int pos_obst;
 
     QSet<int> keysPressed;
     MainWindow *mainWindow;

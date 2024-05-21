@@ -2,5 +2,20 @@
     <qresource prefix="/">
         <file>velocimetro.png</file>
         <file>fondo_car.jpg</file>
+        <file>carro_jfk.png</file>
+        <file>carro_jfk_der.png</file>
+        <file>carro_jfk_izq.png</file>
+        <file>img1.png</file>
+        <file>img2.png</file>
+        <file>img3.png</file>
+        <file>img4.png</file>
+        <file>img5.png</file>
+        <file>img6.png</file>
+        <file>img7.png</file>
+        <file>img8.png</file>
+        <file>img9.png</file>
+        <file>img10.png</file>
+        <file>img11.png</file>
+        <file>img12.png</file>
     </qresource>
 </RCC>

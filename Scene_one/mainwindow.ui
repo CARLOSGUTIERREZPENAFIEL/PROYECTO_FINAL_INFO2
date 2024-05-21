@@ -17,7 +17,7 @@
    <widget class="QGraphicsView" name="veloc">
     <property name="geometry">
      <rect>
-      <x>1660</x>
+      <x>1665</x>
       <y>808</y>
       <width>250</width>
       <height>250</height>
@@ -29,8 +29,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1918</width>
-      <height>1078</height>
+      <width>1920</width>
+      <height>1080</height>
      </rect>
     </property>
    </widget>
@@ -87,9 +87,36 @@
      <double>0.000000000000000</double>
     </property>
    </widget>
+   <widget class="QWidget" name="centralWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>290</y>
+      <width>131</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QPushButton" name="buttonScene2">
+       <property name="text">
+        <string>buttonScene2</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="buttonScene1">
+       <property name="text">
+        <string>buttonScene1</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
    <zorder>graphicsView</zorder>
    <zorder>veloc</zorder>
    <zorder>velocimetro</zorder>
+   <zorder>centralWidget</zorder>
   </widget>
  </widget>
  <resources/>

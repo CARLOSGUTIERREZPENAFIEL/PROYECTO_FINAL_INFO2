@@ -8,10 +8,11 @@
 #include "gscene.h"
 
 FScene::FScene(MainWindow *parent)
-    : QGraphicsScene(117.0, 0.0, 1918, 1078, parent),
+    : QGraphicsScene(117.0, 0.0, 1920, 1080, parent),
     vel_y(0),
     vel_x(0),
     contador_posicion_y(0),
+    pos_obst(0),
     mainWindow(parent)
 {
     // Set the background image
@@ -21,11 +22,15 @@ FScene::FScene(MainWindow *parent)
     connect(aceleracion, &QTimer::timeout, this, &FScene::acelerar);
     aceleracion->start(20);
 
-    car = new Car("D:/Info 2/Proyecto_Final/carro_jfk.png");
+    car = new Car(":/carro_jfk.png");
     addItem(car);
     car->setPos(1138, 800); // límite a la izquierda es 619 en x y a la derecha 1370 en x, inicial x 1138
-}
 
+    obstacleTimer = new QTimer(this); // Timer para generar obstáculos
+    connect(obstacleTimer, &QTimer::timeout, this, &FScene::spawnObstacle);
+    obstacleTimer->start(2000); // Cada 2 segundos
+
+}
 void FScene::keyPressEvent(QKeyEvent *e) {
     keysPressed.insert(e->key());
     QPointF currentCarPos = car->pos();
@@ -50,6 +55,7 @@ void FScene::keyPressEvent(QKeyEvent *e) {
         if (vel_y < 90) {
             vel_y++;
         }
+
     } else if (keysPressed.contains(Qt::Key_Space)) {
         if (vel_y > 0) {
             vel_y -= 9;
@@ -58,6 +64,7 @@ void FScene::keyPressEvent(QKeyEvent *e) {
             vel_y = 0;
         }
     }
+
 }
 
 void FScene::keyReleaseEvent(QKeyEvent *e) {
@@ -69,6 +76,7 @@ void FScene::keyReleaseEvent(QKeyEvent *e) {
     car->resetPixmap();
     contador_posicion_y = 0;
     vel_x = 0;
+
 }
 
 void FScene::acelerar() {
@@ -83,7 +91,7 @@ void FScene::acelerar() {
     setSceneRect(QRectF(currentPos, sceneRect().size()));
 
     // Controlar los límites del movimiento en el eje x
-    if (car->pos().x() < 690 && vel_x < 0) {
+    if (car->pos().x() < 640 && vel_x < 0) {
         vel_x = 0;
     } else if (car->pos().x() > 1370 && vel_x > 0) {
         vel_x = 0;
@@ -121,7 +129,11 @@ void FScene::acelerar() {
             }
         }
     }
+    pos_obst=currentPos.y();
+}
 
-
-
+void FScene::spawnObstacle() {
+    Obstacle *obstacle = new Obstacle(":/carro_obst.png", pos_obst);
+    addItem(obstacle);
+    obstacle->startMoving();
 }

@@ -24,10 +24,14 @@ public:
     ~MainWindow();
 
     GScene* getGScene() const { return scene_two; }
+private slots:
+    void showScene1();
+    void showScene2();
 private:
     Ui::MainWindow *ui;
     FScene *First_Scene;
     GScene *scene_two;
+    QGraphicsView *graphicsView;  // Un solo QGraphicsView
 };
 
 #endif // MAINWINDOW_H
