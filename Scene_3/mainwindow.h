@@ -26,18 +26,25 @@ public:
 
 private slots:
     void run_player();
+    void jump_player();
 
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene_3;
     QGraphicsPixmapItem *personaje1;
     QTimer *timer;
+    QTimer *timer2;
     int cont = 0;
+    int contY = 0;
+    bool Jump = false;
+    QSet<int> keysPressed;
+    bool jump;
+    double posYorigin;
+
 
 
 protected:
     void keyPressEvent(QKeyEvent *e);
     void keyReleaseEvent(QKeyEvent *e);
-    void simularCaminar();
 };
 #endif // MAINWINDOW_H

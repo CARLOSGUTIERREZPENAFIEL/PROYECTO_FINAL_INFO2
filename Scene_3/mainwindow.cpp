@@ -26,8 +26,12 @@ MainWindow::MainWindow(QWidget *parent)
     timer = new QTimer(this);
     timer-> start(80);
     connect(timer,SIGNAL(timeout()),this,SLOT(run_player()));
+    posYorigin = personaje1 -> pos().y();
 
 
+    timer2 = new QTimer(this);
+    timer2 -> start(200);
+    connect(timer2,SIGNAL(timeout()),this,SLOT(jump_player()));
 
 }
 void MainWindow :: run_player(){
@@ -36,10 +40,21 @@ void MainWindow :: run_player(){
         cont = 1;
     }
 }
+void MainWindow :: jump_player(){
+    contY += 1;
+    if(contY>3){
+        contY= 1;
+    }
+}
+
+
 void MainWindow:: keyPressEvent(QKeyEvent *e){
+    keysPressed.insert(e->key());
     QPointF currentPos = scene_3 -> sceneRect().topLeft();
     QPointF subjectPos = personaje1 -> pos();
-
+    QPixmap jump1("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/salto1.png");
+    QPixmap jump2("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/salto2.png");
+    QPixmap jump3("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/salto3.png");
     QPixmap play_run1("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador2.png");
     QPixmap play_run2("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador3.png");
     QPixmap play_run3("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador4.png");
@@ -49,7 +64,7 @@ void MainWindow:: keyPressEvent(QKeyEvent *e){
     QPixmap play_run7("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador8.png");
     QPixmap play_run8("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador9.png");
 
-        if (e-> key() == Qt:: Key_D){
+        if(keysPressed.contains(Qt::Key_D)){
 
             if(cont == 1){
                 personaje1 -> setPixmap(play_run1);
@@ -99,7 +114,25 @@ void MainWindow:: keyPressEvent(QKeyEvent *e){
 
 
     }
-        else if (e-> key() == Qt:: Key_A){
+
+        else if(keysPressed.contains(Qt::Key_W)){
+
+            if(contY == 1){
+                personaje1 -> setPixmap(jump1);
+                personaje1 -> setPos(personaje1 -> pos().x(), personaje1-> pos().y()-1);
+            }
+            else if(contY == 2){
+                personaje1 -> setPixmap(jump2);
+                personaje1 -> setPos(personaje1 -> pos().x(), personaje1-> pos().y()-1);
+            }
+            else if(contY == 3){
+                personaje1 -> setPixmap(jump3);
+                personaje1 -> setPos(personaje1 -> pos().x(), personaje1-> pos().y()-1);
+            }
+
+        }
+
+        else if (keysPressed.contains(Qt::Key_A)){
             personaje1 -> setPixmap(play_run1);
             personaje1 -> setPos(personaje1 -> pos().x()-1,personaje1-> pos().y() );
             personaje1 -> setPixmap(play_run2);
@@ -122,8 +155,12 @@ void MainWindow:: keyPressEvent(QKeyEvent *e){
 }
 
 void MainWindow:: keyReleaseEvent(QKeyEvent *e){
+    keysPressed.remove(e-> key());
     QPixmap pixMap("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador1.png" );
     personaje1 -> setPixmap(pixMap);
+
+
+
 }
 
 MainWindow::~MainWindow()
