@@ -10,14 +10,21 @@ MainWindow::MainWindow(QWidget *parent)
     scene_3 = new QGraphicsScene();
     ui -> graphicsView-> setScene(scene_3);
 
-    QImage imagen_fondo("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/escenario.png");
+    QImage imagen_fondo(":/escenario.png");
     QBrush fondo_escenario(imagen_fondo);
     ui -> graphicsView -> setBackgroundBrush(fondo_escenario);
     scene_3->setSceneRect(0,30,1920,1080);
     ui-> graphicsView->scale(0.95,0.95);
 
+    QPixmap PM(":/caja");
+    caja = new QGraphicsPixmapItem();
+    scene_3 -> addItem(caja);
+    caja -> setPixmap(PM);
+    caja -> setScale(0.2);
+    caja-> setPos(1400,930);
 
-    QPixmap pixMap ("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador1.png");
+
+    QPixmap pixMap (":/jugador1.png");
     personaje1 = new QGraphicsPixmapItem();
     scene_3 -> addItem(personaje1);
     personaje1 -> setPixmap(pixMap);
@@ -28,10 +35,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timer,SIGNAL(timeout()),this,SLOT(run_player()));
     posYorigin = personaje1 -> pos().y();
 
-
     timer2 = new QTimer(this);
-    timer2 -> start(200);
     connect(timer2,SIGNAL(timeout()),this,SLOT(jump_player()));
+
+
 
 }
 void MainWindow :: run_player(){
@@ -40,10 +47,43 @@ void MainWindow :: run_player(){
         cont = 1;
     }
 }
+
 void MainWindow :: jump_player(){
-    contY += 1;
-    if(contY>3){
-        contY= 1;
+    QPointF currentPos = scene_3 -> sceneRect().topLeft();
+    QPointF subjectPos = personaje1 -> pos();
+    QPixmap jump1(":/salto1.png");
+    QPixmap jump2(":/salto2.png");
+    QPixmap jump3(":/salto3.png");
+    if(salto = true){
+        if(subir){
+            personaje1 -> setPixmap(jump1);
+            personaje1 -> setPos(personaje1 -> pos().x()+5, personaje1-> pos().y()-5);
+            currentPos.setX(currentPos.x()+5);
+            scene_3->setSceneRect(QRectF(currentPos, scene_3->sceneRect().size()));
+            distancia+= 5;
+            //contador_saltos += 1;
+            if(distancia == 90){
+                subir = false;
+            }
+        }
+        else{
+
+            //for(int i = 1; i<contador_saltos; i++){
+                personaje1 -> setPixmap(jump2);
+                personaje1 -> setPos(personaje1 -> pos().x()+10, personaje1-> pos().y()+5);
+                currentPos.setX(currentPos.x()+10);
+                scene_3->setSceneRect(QRectF(currentPos, scene_3->sceneRect().size()));
+
+            //}
+            contador_saltos = 0;
+                distancia -= 5;
+            if (distancia ==0){
+                    personaje1->setPixmap(jump3);
+
+                    subir = true;
+                    timer2->stop();
+                }
+        }
     }
 }
 
@@ -52,19 +92,23 @@ void MainWindow:: keyPressEvent(QKeyEvent *e){
     keysPressed.insert(e->key());
     QPointF currentPos = scene_3 -> sceneRect().topLeft();
     QPointF subjectPos = personaje1 -> pos();
-    QPixmap jump1("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/salto1.png");
-    QPixmap jump2("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/salto2.png");
-    QPixmap jump3("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/salto3.png");
-    QPixmap play_run1("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador2.png");
-    QPixmap play_run2("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador3.png");
-    QPixmap play_run3("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador4.png");
-    QPixmap play_run4("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador5.png");
-    QPixmap play_run5("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador6.png");
-    QPixmap play_run6("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador7.png");
-    QPixmap play_run7("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador8.png");
-    QPixmap play_run8("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador9.png");
 
-        if(keysPressed.contains(Qt::Key_D)){
+    QPixmap play_run1(":/jugador2.png");
+    QPixmap play_run2(":/jugador3.png");
+    QPixmap play_run3(":/jugador4.png");
+    QPixmap play_run4(":/jugador5.png");
+    QPixmap play_run5(":/jugador6.png");
+    QPixmap play_run6(":/jugador7.png");
+    QPixmap play_run7(":/jugador8.png");
+    QPixmap play_run8(":/jugador9.png");
+    if(personaje1-> collidesWithItem(caja)){
+        coli = true;
+    }
+    else{
+        coli = false;
+    }
+
+        if(keysPressed.contains(Qt::Key_D) && coli == false){
 
             if(cont == 1){
                 personaje1 -> setPixmap(play_run1);
@@ -114,23 +158,18 @@ void MainWindow:: keyPressEvent(QKeyEvent *e){
 
 
     }
+        if(keysPressed.contains(Qt::Key_W)){
+        salto = true;
+            timer2-> start(18);
+    }
+        if(keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_D)){
+            salto = true;
+            timer2-> start(18);
 
-        else if(keysPressed.contains(Qt::Key_W)){
 
-            if(contY == 1){
-                personaje1 -> setPixmap(jump1);
-                personaje1 -> setPos(personaje1 -> pos().x(), personaje1-> pos().y()-1);
-            }
-            else if(contY == 2){
-                personaje1 -> setPixmap(jump2);
-                personaje1 -> setPos(personaje1 -> pos().x(), personaje1-> pos().y()-1);
-            }
-            else if(contY == 3){
-                personaje1 -> setPixmap(jump3);
-                personaje1 -> setPos(personaje1 -> pos().x(), personaje1-> pos().y()-1);
-            }
+    }
 
-        }
+
 
         else if (keysPressed.contains(Qt::Key_A)){
             personaje1 -> setPixmap(play_run1);
@@ -156,12 +195,15 @@ void MainWindow:: keyPressEvent(QKeyEvent *e){
 
 void MainWindow:: keyReleaseEvent(QKeyEvent *e){
     keysPressed.remove(e-> key());
+    if(salto = false){
     QPixmap pixMap("C:/Users/JuanM/OneDrive/Desktop/PROYECTO_FINAL_INFO2/Scene_3/jugador1.png" );
     personaje1 -> setPixmap(pixMap);
-
+    }
 
 
 }
+
+
 
 MainWindow::~MainWindow()
 {

@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QGraphicsPixmapItem>
+#include <cmath>
+
 
 
 QT_BEGIN_NAMESPACE
@@ -23,6 +25,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void UpdateValues(double &xIn, double &yIn, double &tiempoX, double &tiempoY, double &velX, double &velY, double &ang, int &dir, bool &colX, QGraphicsPixmapItem &personaje1);
 
 private slots:
     void run_player();
@@ -40,6 +43,12 @@ private:
     QSet<int> keysPressed;
     bool jump;
     double posYorigin;
+    QGraphicsPixmapItem *caja;
+    int distancia = 0;
+    int contador_saltos=0;
+    bool salto = false;
+    bool subir = true;
+    bool coli = false;
 
 
 
