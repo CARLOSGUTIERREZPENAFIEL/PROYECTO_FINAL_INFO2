@@ -1,3 +1,9 @@
 #include "personaje.h"
+#include <QPointF>
+#include <QPixmap>
 
-personaje::personaje() {}
+Personaje::Personaje(QObject *parent)
+{
+
+}
+

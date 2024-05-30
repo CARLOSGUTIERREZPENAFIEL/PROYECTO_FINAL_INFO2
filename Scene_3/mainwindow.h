@@ -32,6 +32,8 @@ private slots:
     void jump_player();
 
 private:
+    int lugar_saltoX = 0;
+    int lugar_saltoY = 0;
     Ui::MainWindow *ui;
     QGraphicsScene *scene_3;
     QGraphicsPixmapItem *personaje1;

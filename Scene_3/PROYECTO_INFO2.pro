@@ -11,11 +11,13 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    personaje.cpp
+    personaje.cpp \
+    tscene.cpp
 
 HEADERS += \
     mainwindow.h \
-    personaje.h
+    personaje.h \
+    tscene.h
 
 FORMS += \
     mainwindow.ui

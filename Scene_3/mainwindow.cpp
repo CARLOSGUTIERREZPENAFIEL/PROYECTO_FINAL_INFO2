@@ -49,30 +49,47 @@ void MainWindow :: run_player(){
 }
 
 void MainWindow :: jump_player(){
+    qDebug()<<"ante"<<lugar_saltoY;
     QPointF currentPos = scene_3 -> sceneRect().topLeft();
     QPointF subjectPos = personaje1 -> pos();
     QPixmap jump1(":/salto1.png");
     QPixmap jump2(":/salto2.png");
     QPixmap jump3(":/salto3.png");
-    if(salto = true){
-        if(subir){
+    QPixmap base(":/jugador1.png");
+    if (personaje1->collidesWithItem(caja) && personaje1-> pos().y()<850) {
+        //coli = true;
+        qDebug()<<"posi"<<personaje1-> pos().y();
+
+        personaje1 -> setPixmap(base);
+        personaje1-> setPos(lugar_saltoX,lugar_saltoY);
+        //personaje1->setPos(personaje1->pos().x() - 30, personaje1->pos().y()+(850-personaje1-> pos().y()));
+                // Retroceder un poco
+        timer2->stop();
+        return;
+
+    }
+
+    //if(salto){
+        if(subir== true){
             personaje1 -> setPixmap(jump1);
-            personaje1 -> setPos(personaje1 -> pos().x()+5, personaje1-> pos().y()-5);
-            currentPos.setX(currentPos.x()+5);
-            scene_3->setSceneRect(QRectF(currentPos, scene_3->sceneRect().size()));
-            distancia+= 5;
-            //contador_saltos += 1;
-            if(distancia == 90){
-                subir = false;
+            if(personaje1->pos().y()<=850){
+                personaje1 -> setPos(personaje1 -> pos().x()+5, personaje1-> pos().y()-5);
+                //currentPos.setX(currentPos.x()+5);
+                //scene_3->setSceneRect(QRectF(currentPos, scene_3->sceneRect().size()));
+                distancia+= 5;
+                //contador_saltos += 1;
+                if(distancia == 90){
+                    subir = false;
+                }
             }
         }
-        else{
+        if(subir == false && personaje1 -> pos().y()<=850){
 
             //for(int i = 1; i<contador_saltos; i++){
                 personaje1 -> setPixmap(jump2);
                 personaje1 -> setPos(personaje1 -> pos().x()+10, personaje1-> pos().y()+5);
-                currentPos.setX(currentPos.x()+10);
-                scene_3->setSceneRect(QRectF(currentPos, scene_3->sceneRect().size()));
+                //currentPos.setX(currentPos.x()+10);
+                //scene_3->setSceneRect(QRectF(currentPos, scene_3->sceneRect().size()));
 
             //}
             contador_saltos = 0;
@@ -81,10 +98,14 @@ void MainWindow :: jump_player(){
                     personaje1->setPixmap(jump3);
 
                     subir = true;
+                    salto = false;
                     timer2->stop();
                 }
         }
-    }
+
+
+    //}
+
 }
 
 
@@ -159,8 +180,11 @@ void MainWindow:: keyPressEvent(QKeyEvent *e){
 
     }
         if(keysPressed.contains(Qt::Key_W)){
-        salto = true;
+        lugar_saltoX = personaje1-> pos().x();
+            lugar_saltoY = personaje1 -> pos().y();
             timer2-> start(18);
+
+
     }
         if(keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_D)){
             salto = true;
