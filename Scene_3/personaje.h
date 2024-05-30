@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include <QKeyEvent>
 
+
 class Personaje : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT

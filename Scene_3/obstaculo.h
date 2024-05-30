@@ -1,8 +1,10 @@
 #ifndef OBSTACULO_H
 #define OBSTACULO_H
-
-class obstaculo
+#include <QGraphicsPixmapItem>
+#include <QPixmap>
+class obstaculo: public QObject, public QGraphicsPixmapItem
 {
+    Q_OBJECT
 public:
     obstaculo();
 };

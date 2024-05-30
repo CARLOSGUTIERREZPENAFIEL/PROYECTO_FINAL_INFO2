@@ -5,6 +5,7 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include "personaje.h"
+#include "obstaculo.h"
 
 class TScene : public QGraphicsScene
 {
@@ -15,7 +16,9 @@ public:
 
 private:
     Personaje *personaje1;
-    QGraphicsPixmapItem *caja;
+    obstaculo *caja;
+
+
 
     void initializeScene();
 };
