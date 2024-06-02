@@ -4,8 +4,8 @@
 Car::Car(const QString &filePath, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent),
     carPixmap(filePath),
-    carPixmapLeft(":/carro_jfk_izq.png"),
-    carPixmapRight(":/carro_jfk_der.png")
+    carPixmapLeft(":/imagenes/carro_jfk_izq.png"),
+    carPixmapRight(":/imagenes/carro_jfk_der.png")
 {
     setPixmap(carPixmap);
     setScale(0.25);
@@ -41,11 +41,11 @@ Obstacle::Obstacle(const QString &filePath, qreal pos_obst, QGraphicsItem *paren
     if (rand() % 2 == 0) { // 50% chance for each range
         randomX = 640 + (rand() % (890 - 640)); // Range 640 to 890
         int randomImageIndex = 1 + (rand() % 6); // Random index between 1 and 6
-        obstaclePixmap = QPixmap(QString(":/img%1.png").arg(randomImageIndex));
+        obstaclePixmap = QPixmap(QString(":/imagenes/img%1.png").arg(randomImageIndex));
     } else {
         randomX = 1150 + (rand() % (1370 - 1150)); // Range 1150 to 1370
         int randomImageIndex = 7 + (rand() % 6); // Random index between 7 and 12
-        obstaclePixmap = QPixmap(QString(":/img%1.png").arg(randomImageIndex));
+        obstaclePixmap = QPixmap(QString(":/imagenes/img%1.png").arg(randomImageIndex));
         moveUp = true; // Set the flag to true if in the second range
     }
 

@@ -31,7 +31,6 @@ private:
     int contador_posicion_y;
     int pos_obst;
 
-    QList<car*> obst;
     QSet<int> keysPressed;
     MainWindow *mainWindow;
 };

@@ -1,7 +1,7 @@
 #ifndef GSCENE_H
 #define GSCENE_H
 
-#include "gindicator.h"
+#include "gspeedometer.h"
 #include <QGraphicsScene>
 
 class GScene : public QGraphicsScene
@@ -10,25 +10,11 @@ class GScene : public QGraphicsScene
 public:
     GScene(QObject *parent = nullptr);
 
-    static double sceneWidth()
-    {
-        return sWidth;
-    }
-    static double sceneHeight()
-    {
-        return sHeight;
-    }
-
-    GIndicator *getGIndicator() const { return mIndicator; }
-    static GScene *getGaugeScene() { return gaugeScene; }
+    GSpeedometer *getGSpeedometer() const { return mSpeedometer; }
 
 private:
     QGraphicsPixmapItem *mGauge;
-    GIndicator *mIndicator;
-
-    static double sWidth;
-    static double sHeight;
-    static GScene *gaugeScene;
+    GSpeedometer *mSpeedometer;
 };
 
 #endif // GSCENE_H

@@ -1,9 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "qlcdnumber.h"
 #include <QMainWindow>
 #include <QGraphicsView>
-#include <QTimer>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,14 +26,21 @@ public:
     ~MainWindow();
 
     GScene* getGScene() const { return scene_two; }
+
 private slots:
-    void showScene1();
-    void showScene2();
+    void onBlueButtonClicked();
+    void onRedButtonClicked();
+    void onGreenButtonClicked();
+
 private:
     Ui::MainWindow *ui;
     FScene *First_Scene;
     GScene *scene_two;
-    QGraphicsView *graphicsView;  // Un solo QGraphicsView
+    QGraphicsView *graphicsView;
+    QGraphicsView *View_Velocimetro;
+    QLCDNumber *velocimetro;
+
+
 };
 
 #endif // MAINWINDOW_H

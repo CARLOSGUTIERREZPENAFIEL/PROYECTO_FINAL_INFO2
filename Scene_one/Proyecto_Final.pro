@@ -11,9 +11,7 @@ CONFIG += c++17
 SOURCES += \
     car.cpp \
     fscene.cpp \
-    garrow.cpp \
-    gindicator.cpp \
-    gneedle.cpp \
+    gspeedometer.cpp \
     gscene.cpp \
     main.cpp \
     mainwindow.cpp
@@ -21,9 +19,7 @@ SOURCES += \
 HEADERS += \
     car.h \
     fscene.h \
-    garrow.h \
-    gindicator.h \
-    gneedle.h \
+    gspeedometer.h \
     gscene.h \
     mainwindow.h
 

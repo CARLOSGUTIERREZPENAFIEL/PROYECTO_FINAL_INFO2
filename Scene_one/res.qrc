@@ -1,21 +1,23 @@
 <RCC>
     <qresource prefix="/">
-        <file>velocimetro.png</file>
-        <file>fondo_car.jpg</file>
-        <file>carro_jfk.png</file>
-        <file>carro_jfk_der.png</file>
-        <file>carro_jfk_izq.png</file>
-        <file>img1.png</file>
-        <file>img2.png</file>
-        <file>img3.png</file>
-        <file>img4.png</file>
-        <file>img5.png</file>
-        <file>img6.png</file>
-        <file>img7.png</file>
-        <file>img8.png</file>
-        <file>img9.png</file>
-        <file>img10.png</file>
-        <file>img11.png</file>
-        <file>img12.png</file>
+        <file>imagenes/carro_jfk.png</file>
+        <file>imagenes/carro_jfk_der.png</file>
+        <file>imagenes/carro_jfk_izq.png</file>
+        <file>imagenes/fondo_car.jpg</file>
+        <file>imagenes/img1.png</file>
+        <file>imagenes/img2.png</file>
+        <file>imagenes/img3.png</file>
+        <file>imagenes/img4.png</file>
+        <file>imagenes/img5.png</file>
+        <file>imagenes/img6.png</file>
+        <file>imagenes/img7.png</file>
+        <file>imagenes/img8.png</file>
+        <file>imagenes/img9.png</file>
+        <file>imagenes/img10.png</file>
+        <file>imagenes/img11.png</file>
+        <file>imagenes/img12.png</file>
+        <file>imagenes/velocimetro.png</file>
+        <file>imagenes/Dr95.jpg</file>
+        <file>imagenes/fondo_niv.png</file>
     </qresource>
 </RCC>

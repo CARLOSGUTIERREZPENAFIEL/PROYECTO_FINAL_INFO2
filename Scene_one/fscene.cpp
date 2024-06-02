@@ -8,7 +8,7 @@
 #include "gscene.h"
 
 FScene::FScene(MainWindow *parent)
-    : QGraphicsScene(117.0, 0.0, 1920, 1080, parent),
+    : QGraphicsScene(117, 0, 1920, 1080, parent),
     vel_y(0),
     vel_x(0),
     contador_posicion_y(0),
@@ -16,21 +16,21 @@ FScene::FScene(MainWindow *parent)
     mainWindow(parent)
 {
     // Set the background image
-    setBackgroundBrush(QBrush(QPixmap(":/fondo_car.jpg")));
+    setBackgroundBrush(QBrush(QPixmap(":/imagenes/fondo_car.jpg")));
 
     aceleracion = new QTimer(this);
     connect(aceleracion, &QTimer::timeout, this, &FScene::acelerar);
     aceleracion->start(20);
 
-    car = new Car(":/carro_jfk.png");
+    car = new Car(":/imagenes/carro_jfk.png");
     addItem(car);
     car->setPos(1138, 800); // límite a la izquierda es 619 en x y a la derecha 1370 en x, inicial x 1138
 
     obstacleTimer = new QTimer(this); // Timer para generar obstáculos
     connect(obstacleTimer, &QTimer::timeout, this, &FScene::spawnObstacle);
     obstacleTimer->start(2000); // Cada 2 segundos
-
 }
+
 void FScene::keyPressEvent(QKeyEvent *e) {
     keysPressed.insert(e->key());
     QPointF currentCarPos = car->pos();
@@ -55,7 +55,6 @@ void FScene::keyPressEvent(QKeyEvent *e) {
         if (vel_y < 90) {
             vel_y++;
         }
-
     } else if (keysPressed.contains(Qt::Key_Space)) {
         if (vel_y > 0) {
             vel_y -= 9;
@@ -64,7 +63,6 @@ void FScene::keyPressEvent(QKeyEvent *e) {
             vel_y = 0;
         }
     }
-
 }
 
 void FScene::keyReleaseEvent(QKeyEvent *e) {
@@ -76,7 +74,6 @@ void FScene::keyReleaseEvent(QKeyEvent *e) {
     car->resetPixmap();
     contador_posicion_y = 0;
     vel_x = 0;
-
 }
 
 void FScene::acelerar() {
@@ -107,33 +104,22 @@ void FScene::acelerar() {
             velocimetro->display(vel_y);
         }
     }
-    if (mainWindow)
-    {
-        QLCDNumber *velocimetro = mainWindow->findChild<QLCDNumber *>("velocimetro");
-        if (velocimetro)
-        {
-            velocimetro->display(vel_y);
-        }
-    }
 
     // Acceder a la escena GScene y actualizar el indicador basado en la velocidad
-    if (mainWindow)
-    {
+    if (mainWindow) {
         GScene *gaugeScene = mainWindow->getGScene();
-        if (gaugeScene)
-        {
-            GIndicator *indicator = gaugeScene->getGIndicator();
-            if (indicator)
-            {
-                indicator->updatePositionBasedOnSpeed(vel_y);
+        if (gaugeScene) {
+            GSpeedometer *speedometer = gaugeScene->getGSpeedometer();
+            if (speedometer) {
+                speedometer->updatePositionBasedOnSpeed(vel_y);
             }
         }
     }
-    pos_obst=currentPos.y();
+    pos_obst = currentPos.y();
 }
 
 void FScene::spawnObstacle() {
-    Obstacle *obstacle = new Obstacle(":/carro_obst.png", pos_obst);
+    Obstacle *obstacle = new Obstacle(":/imagenes/carro_obst.png", pos_obst);
     addItem(obstacle);
     obstacle->startMoving();
 }
