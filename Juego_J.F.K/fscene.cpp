@@ -27,7 +27,7 @@ FScene::FScene(MainWindow *parent)
 
     obstacleTimer = new QTimer(this); // Timer para generar obstáculos
     connect(obstacleTimer, &QTimer::timeout, this, &FScene::spawnObstacle);
-    obstacleTimer->start(cant_obst); // Cada 2 segundos
+    obstacleTimer->start(cant_obst); // con una regla de 3 cambio la velocidad de la aparicion de obstaculos para que se vea mas fluido
 }
 
 void FScene::keyPressEvent(QKeyEvent *e) {
@@ -103,10 +103,14 @@ void FScene::acelerar() {
     if (!keysPressed.contains(Qt::Key_W)) {
         if (vel_y > 0) {
             vel_y--;
+        } else if (vel_y<0) {
+            vel_y++;
         }
     } else if (jugar == false) {
         if (vel_y > 0) {
             vel_y--;
+        } else if (vel_y<0) {
+            vel_y++;
         }
     }
     currentPos.setY(currentPos.y() - vel_y);
@@ -127,19 +131,33 @@ void FScene::acelerar() {
         foreach (QGraphicsItem *item, items()) {
             if (item->type() == QGraphicsPixmapItem::Type && item != car) {
                 if (car->collidesWithItem(item)) {
-                    // Si hay colisión, ajusta las velocidades
-                    vel_y = (vel_y + 50) / 2;
-                    vel_x = 0;
-                    vel_obst = (vel_y + 50) / 2;
-                    jugar = false;
-                    obstacleTimer->stop(); // ya no se crean más obstáculos
+                    if((item->pos().x()>=1150) && (item->pos().x()<=1370)){ //1150 to 1370
+                        // Si hay colisión, ajusta las velocidades
+                        vel_y = (vel_y + 50) / 2;
+                        vel_x = 0;
+                        vel_obst = (vel_y + 50) / 2;
+                        jugar = false;
+                        obstacleTimer->stop(); // ya no se crean más obstáculos
 
-                    // Actualizar la velocidad del obstáculo colisionado
-                    Obstacle *obstacle = dynamic_cast<Obstacle*>(item);
-                    if (obstacle) {
-                        obstacle->updateVelocity(vel_obst);
+                        // Actualizar la velocidad del obstáculo colisionado
+                        carro_choque = dynamic_cast<Obstacle*>(item);
+                        if (carro_choque) {
+                            carro_choque->updateVelocity(vel_obst);
+                        }
                     }
+                    else{
+                        new_vel_choque=-vel_y;
+                        carro_choque = dynamic_cast<Obstacle*>(item);
+                        if (carro_choque) {
+                            carro_choque->updateVelocity(new_vel_choque);
+                        }
+                        vel_y = -50;
+                        choque = new QTimer(this); // Timer para generar obstáculos
+                        connect(obstacleTimer, &QTimer::timeout, this, &FScene::vel_choque);
+                        choque->start(20);
 
+
+                    }
                     // Crear imagen de humo solo una vez
                     collisionImage = new QGraphicsPixmapItem(QPixmap(":/imagenes/humo.png"));
                     addItem(collisionImage);
@@ -197,7 +215,15 @@ void FScene::spawnObstacle() {
     }
 }
 
+void FScene::vel_choque(){
+    new_vel_choque--;
+    carro_choque->updateVelocity(new_vel_choque);
+    if(new_vel_choque>=0){
+        carro_choque->updateVelocity(new_vel_choque);
+        choque->stop();
+    }
 
+}
 
 
 //            collisionImage->setPos(currentCarPos.x() + 80, currentCarPos.y() - 34);
