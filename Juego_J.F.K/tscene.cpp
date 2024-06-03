@@ -104,23 +104,32 @@ void TScene::runPolice()
     }
     if(jugar==true){
         if( personaje1->collidesWithItem(policia)){
+            tanque_actual = policia->pos().x();
+            if(proyectil){
+                removeItem(proyectil);
+                delete proyectil;
+            }
             proyectil = nullptr;
             bala = false;
             vida=0;
             jugar=false;
-            Police->stop();
             fire->stop();
-            obs_timer->stop();
-            coli->stop();
-            timer->stop();
-            PMenu* menu = new PMenu("Perdiste", 3); // Cambia el texto y nivel según sea necesario
-            connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
-            connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
-            menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
-            menu->move(600, 100); // Posicionar el menú en la ventana principal
-            menu->show();
+
 
         }
+    }
+    if((jugar==false) && (policia->pos().x() > tanque_actual+600) && (animacion_final==false)){
+        Police->stop();
+        obs_timer->stop();
+        coli->stop();
+        timer->stop();
+        animacion_final=true;
+        PMenu* menu = new PMenu("Perdiste", 3); // Cambia el texto y nivel según sea necesario
+        connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+        connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+        menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
+        menu->move(600, 100); // Posicionar el menú en la ventana principal
+        menu->show();
     }
 }
 

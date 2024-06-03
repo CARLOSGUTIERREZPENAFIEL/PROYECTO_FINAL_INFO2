@@ -42,6 +42,7 @@ private:
     QTimer *fire;
     QTimer *bulletTimer;
     QTimer *timer;
+    qreal tanque_actual;
     QGraphicsPixmapItem *caja;
     QGraphicsPixmapItem *policia;
     QGraphicsPixmapItem *proyectil;
@@ -57,6 +58,7 @@ private:
     int angulo = 0;
     int vida = 30;
     void initializeScene();
+    bool animacion_final = false;
     bool bala = false;
     bool jugar = true;
     float g = 9.81;
