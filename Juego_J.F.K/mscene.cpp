@@ -36,10 +36,10 @@ MScene::MScene(QObject *parent) : QGraphicsScene(parent)
                            "}";
 
     QString buttonStyle3 = "QPushButton {"
-                           "background-image: url(:/imagenes/n3_on);"
+                           "background-image: url(:/imagenes/n3_off);"
                            "background-repeat: no-repeat;"
                            "background-position: center;"
-                           "border: 5px solid #FFD700;"
+                           "border: 5px solid #C0C0C0;"
                            "width: 400px;"
                            "height: 400px;"
                            "}";

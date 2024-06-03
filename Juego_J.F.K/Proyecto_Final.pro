@@ -17,6 +17,7 @@ SOURCES += \
     mainwindow.cpp \
     mscene.cpp \
     personaje.cpp \
+    pmenu.cpp \
     tscene.cpp
 
 HEADERS += \
@@ -27,6 +28,7 @@ HEADERS += \
     mainwindow.h \
     mscene.h \
     personaje.h \
+    pmenu.h \
     tscene.h
 
 FORMS += \

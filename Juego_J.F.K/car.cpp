@@ -27,13 +27,15 @@ void Car::updatePosition(qreal vel_x, qreal vel_y) {
     setPos(pos().x() + vel_x, pos().y() - vel_y);
 }
 
-Obstacle::Obstacle(const QString &filePath, qreal pos_obst, QGraphicsItem *parent)
+Obstacle::Obstacle(const QString &filePath, qreal pos_obst, int vel_obst, qreal car_pos, QGraphicsItem *parent)
     : QObject(),
     QGraphicsPixmapItem(parent),
     obstaclePixmap(filePath),
     moveTimer(new QTimer(this)),
     pos_obsta(pos_obst),
-    moveUp(false) // Initialize the flag
+    vel_obsta(vel_obst),
+    car_posi(car_pos),
+    moveUp(false)
 {
     setScale(0.18);
 
@@ -55,21 +57,31 @@ Obstacle::Obstacle(const QString &filePath, qreal pos_obst, QGraphicsItem *paren
 }
 
 void Obstacle::startMoving() {
-    moveTimer->start(50); // Move the obstacle every 50 ms
+    moveTimer->start(20);
 }
 
 void Obstacle::moveDown() {
     if (moveUp) {
-        setPos(pos().x(), pos().y() - 10); // Move up
+        setPos(pos().x(), pos().y() - vel_obsta);
+        if (pos().y() > 1078 + pos_obsta) {
+            if (scene()) {
+                scene()->removeItem(this);
+            }
+            delete this;
+        }
     } else {
-        setPos(pos().x(), pos().y() + 10); // Move down
+        setPos(pos().x(), pos().y() + vel_obsta);
+        if (pos().y()>car_posi) {
+            if (scene()) {
+                scene()->removeItem(this);
+            }
+            delete this;
+        }
     }
 
-    // Remove the obstacle if it goes off-screen
-    if (pos().y() > 1078 + pos_obsta) {
-        if (scene()) {
-            scene()->removeItem(this);
-        }
-        delete this;
-    }
+
+}
+
+void Obstacle::updateVelocity(int new_vel_obst) {
+    vel_obsta = new_vel_obst;
 }

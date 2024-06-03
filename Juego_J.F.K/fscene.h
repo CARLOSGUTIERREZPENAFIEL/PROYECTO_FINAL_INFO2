@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QSet>
 #include "car.h"
+#include "pmenu.h"
 
 class MainWindow;
 
@@ -22,6 +23,7 @@ private slots:
     void spawnObstacle();
 private:
     QGraphicsPixmapItem *mCarretera;
+    QGraphicsPixmapItem *collisionImage;
     Car *car;
     QTimer *aceleracion;
     QTimer *obstacleTimer; // Timer para los obstáculos
@@ -30,6 +32,11 @@ private:
     int vel_x;
     int contador_posicion_y;
     int pos_obst;
+    int cant_obst = 2000;
+    int vel_obst = 50;
+
+    bool jugar = true;
+    bool humoCreado = false; // Humo 1 vez
 
     QSet<int> keysPressed;
     MainWindow *mainWindow;
