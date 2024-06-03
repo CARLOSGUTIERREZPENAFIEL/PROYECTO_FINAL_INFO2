@@ -30,10 +30,11 @@ public:
 
     GScene* getGScene() const { return Vel_FScene; }
 
-private slots:
+public slots:
     void onMenuButtonClicked();
     void onLevelSelected(int level);
     void removeVelocimetroView();
+    void showInitialScene();
 
 private:
     Ui::MainWindow *ui;

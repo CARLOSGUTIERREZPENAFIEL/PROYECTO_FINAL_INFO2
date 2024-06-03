@@ -3,16 +3,16 @@
 #include "gscene.h"
 #include "fscene.h"
 #include "mscene.h"
-#include "tscene.h" // Asegúrate de tener esta línea si tienes una clase TScene.
+#include "tscene.h"
 #include <QScreen>
 #include <QVBoxLayout>
 #include <QPalette>
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
-
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), First_Scene(nullptr), Vel_FScene(nullptr), Third_Scene(nullptr), View_Velocimetro(nullptr)
+    : QMainWindow(parent), ui(new Ui::MainWindow), First_Scene(nullptr), Vel_FScene(nullptr), Third_Scene(nullptr), View_Velocimetro(nullptr), Menu_Scene(nullptr)
 {
     ui->setupUi(this);
 
@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
                            "background-repeat: no-repeat;"
                            "background-position: center;"
                            "border: none;"
-                           "width: 793px;"  // Ancho deseado del botón
+                           "width: 793px;"
                            "height: 250px;"
                            "}";
 
@@ -56,8 +56,6 @@ MainWindow::MainWindow(QWidget *parent)
     menuButton->setGeometry(0,0,793,250);
     menuButton->move(buttonX, buttonY);
 
-
-
     // Agregar mensaje "J.F.K"
     titulo = new QLabel("J.F.K", this);
     titulo->setStyleSheet("QLabel { color: white; font-size: 200px; }");
@@ -65,18 +63,16 @@ MainWindow::MainWindow(QWidget *parent)
     int labelWidth = 396.5-(titulo->width()/2);
     titulo->move(menuButton->x()+labelWidth, menuButton->y() - 250);
 
-    //los creditos pai
-    Cred = new QLabel("Juego proyecto final info 2 \n- Creado por Andrés G y Carlos P.", this);
+    // Agregar créditos
+    Cred = new QLabel("Juego proyecto final info 2 \n- Creado por Andrés G y Carlos G.", this);
     Cred->setStyleSheet("QLabel { color: white; font-size: 25px; }");
     Cred->adjustSize();
     Cred->move(20, 950);
-
 
     initialScene = new QGraphicsScene(this);
     initialScene->setSceneRect(2, 2, viewWidth, viewHeight);
     graphicsView->setScene(initialScene);
     initialScene->setBackgroundBrush(QBrush(QPixmap(":/imagenes/fondo_niv.png").scaled(viewWidth, viewHeight)));
-
 }
 
 MainWindow::~MainWindow()
@@ -90,21 +86,45 @@ MainWindow::~MainWindow()
 
 void MainWindow::onMenuButtonClicked()
 {
-    Menu_Scene = new MScene(this);
+    if (!Menu_Scene) {
+        Menu_Scene = new MScene(this);
+        connect(Menu_Scene, &MScene::levelSelected, this, &MainWindow::onLevelSelected);
+    }
     graphicsView->setScene(Menu_Scene);
     menuButton->hide();
     titulo->hide();
-    connect(Menu_Scene, &MScene::levelSelected, this, &MainWindow::onLevelSelected);
-
 }
 
 void MainWindow::onLevelSelected(int level)
 {
+    qDebug() << "nivel seleccionado:" << level;
+
+    // Reiniciar la escena actual antes de crear una nueva, solo si ya existen, tiene muchos qdebug porque me daba error y estaba probando donde era
+    if (First_Scene) {
+        qDebug() << "elimando First_Scene";
+        delete First_Scene;
+        First_Scene = nullptr;
+        removeVelocimetroView();
+
+    }
+    if (Vel_FScene) {
+        qDebug() << "elimando Vel_FScene";
+        delete Vel_FScene;
+        Vel_FScene = nullptr;
+    }
+    if (Third_Scene) {
+        qDebug() << "elimando Third_Scene";
+        delete Third_Scene;
+        Third_Scene = nullptr;
+    }
+
 
     if (level == 1) {
+        qDebug() << "Crea First_Scene";
         First_Scene = new FScene(this);
         graphicsView->setScene(First_Scene);
 
+        qDebug() << "Crea Vel_FScene";
         Vel_FScene = new GScene(this);
         View_Velocimetro = new QGraphicsView(this);
         View_Velocimetro->setScene(Vel_FScene);
@@ -126,21 +146,25 @@ void MainWindow::onLevelSelected(int level)
         Cred->hide();
 
     } else if (level == 2) {
-        First_Scene = new FScene(this);  // Puedes cambiar esto según el nivel seleccionado
+        qDebug() << "Crea First_Scene para level 2";
+        First_Scene = new FScene(this);
         graphicsView->setScene(First_Scene);
         Cred->hide();
 
     } else if (level == 3) {
-        Third_Scene = new TScene(this);  // Puedes cambiar esto según el nivel seleccionado
+        qDebug() << "Crea Third_Scene";
+        Third_Scene = new TScene(this);
         graphicsView->setScene(Third_Scene);
         Cred->hide();
     } else if (level == 4) {
+        qDebug() << "muestra la initialScene";
         graphicsView->setScene(initialScene);
         menuButton->show();
         titulo->show();
+        Cred->show();
         delete Menu_Scene;
+        Menu_Scene = nullptr;
     }
-
 }
 
 void MainWindow::removeVelocimetroView()
@@ -153,4 +177,27 @@ void MainWindow::removeVelocimetroView()
         delete velocimetro;
         velocimetro = nullptr;
     }
+}
+
+void MainWindow::showInitialScene()
+{
+    // Eliminar todas las escenas adicionales y mostrar la initialScene
+    if (First_Scene) {
+        delete First_Scene;
+        First_Scene = nullptr;
+        removeVelocimetroView();
+    }
+    if (Vel_FScene) {
+        delete Vel_FScene;
+        Vel_FScene = nullptr;
+    }
+    if (Third_Scene) {
+        delete Third_Scene;
+        Third_Scene = nullptr;
+    }
+
+    graphicsView->setScene(initialScene);
+    menuButton->show();
+    titulo->show();
+    Cred->show(); // Mostrar créditos si estaban ocultos
 }

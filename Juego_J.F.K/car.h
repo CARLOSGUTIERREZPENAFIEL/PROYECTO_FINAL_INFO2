@@ -4,6 +4,7 @@
 #include <QGraphicsPixmapItem>
 #include <QTimer>
 #include <QObject>
+#include <QPointF>
 
 class Car : public QGraphicsPixmapItem
 {
@@ -24,8 +25,9 @@ class Obstacle : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    Obstacle(const QString &filePath, qreal pos_obst, QGraphicsItem *parent = nullptr);
+    Obstacle(const QString &filePath, qreal pos_obst, int vel_obst, qreal car_pos, QGraphicsItem *parent = nullptr);
     void startMoving();
+    void updateVelocity(int new_vel_obst);
 
 public slots:
     void moveDown();
@@ -34,7 +36,9 @@ private:
     QPixmap obstaclePixmap;
     QTimer *moveTimer;
     int pos_obsta;
-    bool moveUp; // Flag to determine the direction of movement
+    int vel_obsta;
+    qreal car_posi;
+    bool moveUp;
 };
 
 #endif // CAR_H

@@ -13,10 +13,12 @@ class TScene : public QGraphicsScene
 public:
     TScene(QObject *parent = nullptr);
 
+private slots:
+    void onMoveBackground(int dx);
+
 private:
     Personaje *personaje1;
-
-
+    int backgroundOffsetX;
 
     void initializeScene();
 };

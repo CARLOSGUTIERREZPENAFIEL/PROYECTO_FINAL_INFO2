@@ -40,5 +40,6 @@
         <file>imagenes/salto4.png</file>
         <file>imagenes/boton_start.png</file>
         <file>imagenes/back.png</file>
+        <file>imagenes/humo.png</file>
     </qresource>
 </RCC>

@@ -27,40 +27,61 @@ FScene::FScene(MainWindow *parent)
 
     obstacleTimer = new QTimer(this); // Timer para generar obstáculos
     connect(obstacleTimer, &QTimer::timeout, this, &FScene::spawnObstacle);
-    obstacleTimer->start(2000); // Cada 2 segundos
+    obstacleTimer->start(cant_obst); // Cada 2 segundos
 }
 
 void FScene::keyPressEvent(QKeyEvent *e) {
     keysPressed.insert(e->key());
     QPointF currentCarPos = car->pos();
+    if(jugar == true){
+        if ((keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_A)) || (keysPressed.contains(Qt::Key_A) && vel_y > 0)) {
+            vel_x -= (vel_y / 4);
+            car->turnLeft();
+            if (contador_posicion_y == 0) {
+                car->setPos(currentCarPos.x(), currentCarPos.y() + 30);
+                contador_posicion_y = 1;
+            }
+        }
+        if ((keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_D)) || (keysPressed.contains(Qt::Key_D) && vel_y > 0)) {
+            vel_x += (vel_y / 4);
+            car->turnRight();
+            if (contador_posicion_y == 0) {
+                car->setPos(currentCarPos.x(), currentCarPos.y() + 30);
+                contador_posicion_y = 1;
+            }
+        }
+        if (keysPressed.contains(Qt::Key_W)) {
+            if (vel_y < 90) {
+                vel_y++;
+            }
+        } else if (keysPressed.contains(Qt::Key_Space)) {
+            if (vel_y > 0) {
+                vel_y -= 9;
+            }
+            if (vel_y < 0) {
+                vel_y = 0;
+            }
+        }
+    } else {
+        keysPressed.remove(e->key());
+    }
 
-    if ((keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_A)) || (keysPressed.contains(Qt::Key_A) && vel_y > 0)) {
-        vel_x -= (vel_y / 4);
-        car->turnLeft();
-        if (contador_posicion_y == 0) {
-            car->setPos(currentCarPos.x(), currentCarPos.y() + 30);
-            contador_posicion_y = 1;
-        }
-    }
-    if ((keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_D)) || (keysPressed.contains(Qt::Key_D) && vel_y > 0)) {
-        vel_x += (vel_y / 4);
-        car->turnRight();
-        if (contador_posicion_y == 0) {
-            car->setPos(currentCarPos.x(), currentCarPos.y() + 30);
-            contador_posicion_y = 1;
-        }
-    }
-    if (keysPressed.contains(Qt::Key_W)) {
-        if (vel_y < 90) {
-            vel_y++;
-        }
-    } else if (keysPressed.contains(Qt::Key_Space)) {
-        if (vel_y > 0) {
-            vel_y -= 9;
-        }
-        if (vel_y < 0) {
-            vel_y = 0;
-        }
+    // Manejar la tecla P para pausar
+    if (keysPressed.contains(Qt::Key_P)) {
+        PMenu* menu = new PMenu("Pausa", 1, true); // Texto "Pausa" y mostrar botón "Reanudar"
+        connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+        connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+        connect(menu, &PMenu::resume, this, [this]() {
+            jugar = true;
+            aceleracion->start();
+            obstacleTimer->start();
+        });
+        menu->setParent(mainWindow);
+        menu->move(600, 100);
+        menu->show();
+        jugar = false;
+        aceleracion->stop();
+        obstacleTimer->stop();
     }
 }
 
@@ -78,7 +99,12 @@ void FScene::keyReleaseEvent(QKeyEvent *e) {
 void FScene::acelerar() {
     QPointF currentCarPos = car->pos();
     QPointF currentPos = sceneRect().topLeft();
+
     if (!keysPressed.contains(Qt::Key_W)) {
+        if (vel_y > 0) {
+            vel_y--;
+        }
+    } else if (jugar == false) {
         if (vel_y > 0) {
             vel_y--;
         }
@@ -95,6 +121,49 @@ void FScene::acelerar() {
 
     // Actualizar la posición del coche
     car->setPos(currentCarPos.x() + vel_x, currentCarPos.y() - vel_y);
+
+    // Verificar colisión con obstáculos
+    if(!humoCreado){
+        foreach (QGraphicsItem *item, items()) {
+            if (item->type() == QGraphicsPixmapItem::Type && item != car) {
+                if (car->collidesWithItem(item)) {
+                    // Si hay colisión, ajusta las velocidades
+                    vel_y = (vel_y + 50) / 2;
+                    vel_x = 0;
+                    vel_obst = (vel_y + 50) / 2;
+                    jugar = false;
+                    obstacleTimer->stop(); // ya no se crean más obstáculos
+
+                    // Actualizar la velocidad del obstáculo colisionado
+                    Obstacle *obstacle = dynamic_cast<Obstacle*>(item);
+                    if (obstacle) {
+                        obstacle->updateVelocity(vel_obst);
+                    }
+
+                    // Crear imagen de humo solo una vez
+                    collisionImage = new QGraphicsPixmapItem(QPixmap(":/imagenes/humo.png"));
+                    addItem(collisionImage);
+                    humoCreado = true;
+
+                    // Salir del bucle de verificación de colisión
+                    break;
+                }
+            }
+        }
+    }
+    // Actualizar la posición del humo si ha sido creado
+    if (humoCreado) {
+        collisionImage->setPos(currentCarPos.x() + 80, currentCarPos.y() - 34);
+        if (vel_y == 0) {
+            PMenu* menu = new PMenu("Perdiste", 1); // Cambia el texto y nivel según sea necesario
+            connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+            connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+            menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
+            menu->move(600, 100); // Posicionar el menú en la ventana principal
+            menu->show();
+            aceleracion->stop();
+        }
+    }
 
     // Actualizar el velocímetro
     if (mainWindow) {
@@ -114,11 +183,22 @@ void FScene::acelerar() {
             }
         }
     }
+
+    cant_obst = (-((vel_y / 90) - 1) * 1500) + 500;
     pos_obst = currentPos.y();
 }
 
 void FScene::spawnObstacle() {
-    Obstacle *obstacle = new Obstacle(":/imagenes/carro_obst.png", pos_obst);
-    addItem(obstacle);
-    obstacle->startMoving();
+    QPointF currentCarPos = car->pos();
+    if(jugar == true){
+        Obstacle *obstacle = new Obstacle(":/imagenes/carro_obst.png", pos_obst, vel_obst, currentCarPos.y());
+        addItem(obstacle);
+        obstacle->startMoving();
+    }
 }
+
+
+
+
+//            collisionImage->setPos(currentCarPos.x() + 80, currentCarPos.y() - 34);
+
