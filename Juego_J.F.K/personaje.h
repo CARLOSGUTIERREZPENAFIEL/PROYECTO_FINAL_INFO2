@@ -19,6 +19,7 @@ public:
     double posX = -70;
     bool game = false;
     bool colision = false;
+    bool inicio = false;
 
 signals:
     void moveBackground(int dx);  // Declaración de la señal
@@ -27,6 +28,7 @@ private slots:
     void runPlayer();
     void jumpPlayer();
     void updateMovement();
+
 
 private:
     QTimer *timer;
@@ -41,6 +43,8 @@ private:
     bool subir = true;
     bool salto = true;
     bool coli = false;
+
+
 
     void initializePlayer();
 };

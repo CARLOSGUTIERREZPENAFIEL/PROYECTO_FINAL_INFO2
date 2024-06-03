@@ -40,5 +40,15 @@
         <file>imagenes/salto4.png</file>
         <file>imagenes/boton_start.png</file>
         <file>imagenes/back.png</file>
+        <file>imagenes/soldado1.png</file>
+        <file>imagenes/soldado2.png</file>
+        <file>imagenes/soldado3.png</file>
+        <file>imagenes/soldado4.png</file>
+        <file>imagenes/soldado5.png</file>
+        <file>imagenes/soldado6.png</file>
+        <file>imagenes/soldado7.png</file>
+        <file>imagenes/soldado8.png</file>
+        <file>imagenes/disparo.png</file>
+        <file>imagenes/tanque.png</file>
     </qresource>
 </RCC>

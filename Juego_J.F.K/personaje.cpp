@@ -17,7 +17,10 @@ Personaje::Personaje(QGraphicsItem *parent) : QGraphicsPixmapItem(parent)
     movementTimer = new QTimer(this);
     movementTimer->start(30);
     connect(movementTimer, &QTimer::timeout, this, &Personaje::updateMovement);
+
 }
+
+
 
 void Personaje::initializePlayer()
 {
@@ -54,8 +57,8 @@ void Personaje::jumpPlayer()
     if (subir) {
         setPixmap(jump1);
         if (pos().y() <= 850) {
-            setPos(pos().x() + 10, pos().y() - 10);
-            posX += 10;
+            setPos(pos().x() + 7, pos().y() - 9);
+            posX += 7;
             distancia += 5;
             if (distancia == 90) {
                 subir = false;
@@ -64,8 +67,8 @@ void Personaje::jumpPlayer()
     } else{
         if(colision == false){
             setPixmap(jump2);
-            setPos(pos().x() + 10, pos().y() + 10);
-            posX += 10;
+            setPos(pos().x() + 7, pos().y() + 9);
+            posX += 7;
             distancia -= 5;
             if (distancia == 0) {
                 setPixmap(jump3);
@@ -82,7 +85,8 @@ void Personaje::jumpPlayer()
         }
     }
     if(pos().x()>850 && colision == false){
-        emit moveBackground(10);
+        emit moveBackground(7);
+        inicio = true;
     }
 }
 
@@ -131,7 +135,8 @@ void Personaje::updateMovement()
             setPos(pos().x() + 10, pos().y());
             posX += 10;
             if(pos().x()>850){
-                emit moveBackground(10);  // Emitir la señal para mover el fondo
+                inicio = true;
+                emit moveBackground(10);
             }
         }
         if(colision == true){
