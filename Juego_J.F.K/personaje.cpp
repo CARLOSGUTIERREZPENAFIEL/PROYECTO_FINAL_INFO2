@@ -1,5 +1,4 @@
 #include "personaje.h"
-#include "tscene.h"
 #include <QDebug>
 
 Personaje::Personaje(QGraphicsItem *parent) : QGraphicsPixmapItem(parent)
@@ -21,13 +20,12 @@ Personaje::Personaje(QGraphicsItem *parent) : QGraphicsPixmapItem(parent)
 }
 
 
-
 void Personaje::initializePlayer()
 {
     QPixmap pixMap(":/imagenes/jugador1.png");
     setPixmap(pixMap);
     setScale(0.5);
-    setPos(-70, 850);
+    setPos(0, 850);
     setFlag(QGraphicsItem::ItemIsFocusable);
     setFocus();
 }

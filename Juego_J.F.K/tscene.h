@@ -5,18 +5,23 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include "personaje.h"
+#include "PMenu.h" // Incluye el archivo de encabezado del menú
 #include <QList>
 
+class MainWindow;
 
 class TScene : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    TScene(QObject *parent = nullptr);
+    TScene(MainWindow *parent = nullptr);
 
 
 
+
+protected:
+    void keyPressEvent(QKeyEvent *event) override; // Sobrescribe keyPressEvent
 
 private slots:
     void onMoveBackground(int dx);
@@ -28,35 +33,36 @@ private slots:
     //void moveBullet();
 
 private:
+    void showPauseMenu(); // Declaración de la nueva función
+
     Personaje *personaje1;
     QTimer *Police;
-    int backgroundOffsetX;
-    QTimer *timer;
-    QGraphicsPixmapItem *caja;
-    int pos = 1400;
-    void initializeScene();
-    QList<QGraphicsPixmapItem*>obstaculos;
     QTimer *obs_timer;
     QTimer *coli;
     QTimer *fire;
     QTimer *bulletTimer;
+    QTimer *timer;
+    QGraphicsPixmapItem *caja;
     QGraphicsPixmapItem *policia;
     QGraphicsPixmapItem *proyectil;
+    QList<QGraphicsPixmapItem*>obstaculos;
+
+    int pos = 1400;
+    int backgroundOffsetX;
     int pos_bala = 0;
     int cont2=0;
-    bool bala = false;
     int Distancia_bala = 0;
     int Distancia_tanque=0;
-
-
     int velx = 20;
+    int angulo = 0;
+    int vida = 30;
+    void initializeScene();
+    bool bala = false;
+    bool jugar = true;
     float g = 9.81;
     double t = 0.0;
-    int angulo = 0;
 
-
-
-
+    MainWindow *mainWindow;
 };
 
 #endif // TSCENE_H
