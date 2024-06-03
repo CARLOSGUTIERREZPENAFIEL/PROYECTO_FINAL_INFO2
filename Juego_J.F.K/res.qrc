@@ -50,5 +50,6 @@
         <file>imagenes/soldado8.png</file>
         <file>imagenes/disparo.png</file>
         <file>imagenes/tanque.png</file>
+
     </qresource>
 </RCC>
