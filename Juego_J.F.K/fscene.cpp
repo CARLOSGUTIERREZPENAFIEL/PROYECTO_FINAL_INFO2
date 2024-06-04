@@ -131,12 +131,12 @@ void FScene::acelerar() {
         foreach (QGraphicsItem *item, items()) {
             if (item->type() == QGraphicsPixmapItem::Type && item != car) {
                 if (car->collidesWithItem(item)) {
+                    vel_x = 0;
+                    jugar = false;
                     if((item->pos().x()>=1150) && (item->pos().x()<=1370)){ //1150 to 1370
                         // Si hay colisión, ajusta las velocidades
                         vel_y = (vel_y + 50) / 2;
-                        vel_x = 0;
                         vel_obst = (vel_y + 50) / 2;
-                        jugar = false;
                         obstacleTimer->stop(); // ya no se crean más obstáculos
 
                         // Actualizar la velocidad del obstáculo colisionado
@@ -146,15 +146,19 @@ void FScene::acelerar() {
                         }
                     }
                     else{
-                        new_vel_choque=-vel_y;
+                        if(vel_y>50){
+                            divisor = ((vel_y-50)/5);
+                        }
+                        new_vel_choque=(-vel_y)/divisor;
                         carro_choque = dynamic_cast<Obstacle*>(item);
                         if (carro_choque) {
                             carro_choque->updateVelocity(new_vel_choque);
                         }
-                        vel_y = -50;
+                        vel_y = (-50)/2;
                         choque = new QTimer(this); // Timer para generar obstáculos
                         connect(obstacleTimer, &QTimer::timeout, this, &FScene::vel_choque);
                         choque->start(20);
+                        obstacleTimer->stop();
 
 
                     }

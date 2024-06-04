@@ -32,6 +32,7 @@ private:
     Obstacle *carro_choque;
     int vel_y;
     int vel_x;
+    int divisor;
     int new_vel_choque=0;
     int contador_posicion_y;
     int pos_obst;
