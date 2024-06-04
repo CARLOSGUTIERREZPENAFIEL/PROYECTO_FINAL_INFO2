@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include <QKeyEvent>
 #include <QList>
+#include "PMenu.h"
 
 class Personaje : public QObject, public QGraphicsPixmapItem
 {
@@ -20,6 +21,8 @@ public:
     bool game = false;
     bool colision = false;
     bool inicio = false;
+    bool jugar_nivel =  true;
+    bool win = false;
 
 signals:
     void moveBackground(int dx);  // Declaración de la señal

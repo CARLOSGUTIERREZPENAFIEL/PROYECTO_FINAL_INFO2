@@ -7,12 +7,19 @@
 #include "mainwindow.h"
 
 
+
 TScene::TScene(MainWindow *parent) :  mainWindow(parent)
 {
     initializeScene();
     QImage imagen_fondo(":/imagenes/escenario.png");
     QBrush fondo_escenario(imagen_fondo);
     setBackgroundBrush(fondo_escenario);
+    QPixmap f(":/imagenes/disparo.png");
+    fin = new QGraphicsPixmapItem();
+    addItem(fin);
+    fin ->setPixmap(f);
+    fin->setScale(1);
+    fin->setPos(1850,870);
 
     connect(personaje1, &Personaje::moveBackground, this, &TScene::onMoveBackground);
     timer = new QTimer(this);
@@ -69,6 +76,11 @@ void TScene::disparo()
             vida--;
             if(vida<=0){
                 jugar=false;
+                qDebug()<<"antes  "<<personaje1->jugar_nivel;
+                personaje1-> jugar_nivel = false;
+                qDebug()<<"despues "<<personaje1-> jugar_nivel;
+
+
                 Police->stop();
                 fire->stop();
                 obs_timer->stop();
@@ -102,6 +114,11 @@ void TScene::runPolice()
             policia->setPos(policia->pos().x() + 20, policia->pos().y());
         }
     }
+    if(personaje1->jugar_nivel == false){
+        Police->stop();
+        fire ->stop();
+
+    }
     if(jugar==true){
         if( personaje1->collidesWithItem(policia)){
             tanque_actual = policia->pos().x();
@@ -113,6 +130,7 @@ void TScene::runPolice()
             bala = false;
             vida=0;
             jugar=false;
+            personaje1->jugar_nivel=false;
             fire->stop();
 
 
@@ -175,6 +193,20 @@ void TScene::actualizar_obstaculos()
 
 void TScene::verificar_colision()
 {
+
+    if(personaje1-> win == true){
+        Police->stop();
+        obs_timer->stop();
+        coli->stop();
+        timer->stop();
+        fire->stop();
+        PMenu* menu = new PMenu("GANASTE", 3); // Cambia el texto y nivel según sea necesario
+        connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+        connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+        menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
+        menu->move(600, 100); // Posicionar el menú en la ventana principal
+        menu->show();
+    }
     bool colision_detectada = false;
     for (int i = 0; i < obstaculos.size(); i++) {
         if (personaje1->collidesWithItem(obstaculos[i])) {
@@ -194,6 +226,7 @@ void TScene::verificar_colision()
     } else {
         personaje1->colision = false;
     }
+
 }
 
 void TScene::keyPressEvent(QKeyEvent *event)

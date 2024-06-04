@@ -47,6 +47,7 @@ private:
     QGraphicsPixmapItem *policia;
     QGraphicsPixmapItem *proyectil;
     QList<QGraphicsPixmapItem*>obstaculos;
+    QGraphicsPixmapItem *fin;
 
     int pos = 1400;
     int backgroundOffsetX;
