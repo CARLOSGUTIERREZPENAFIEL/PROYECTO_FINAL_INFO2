@@ -51,5 +51,7 @@
         <file>imagenes/soldado7.png</file>
         <file>imagenes/soldado8.png</file>
         <file>imagenes/tanque.png</file>
+        <file>imagenes/avion.png</file>
+        <file>imagenes/menu.png</file>
     </qresource>
 </RCC>

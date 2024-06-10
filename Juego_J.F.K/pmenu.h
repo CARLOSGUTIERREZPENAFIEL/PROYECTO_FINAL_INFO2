@@ -21,10 +21,10 @@ public:
 signals:
     void retry(int level);
     void goToMenu();
-    void resume(); // Señal para reanudar el juego
+    void resume();
 
 public slots:
-    void closeMenu(); // Slot para cerrar el menú
+    void closeMenu();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

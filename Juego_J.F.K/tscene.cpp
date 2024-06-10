@@ -1,15 +1,11 @@
 #include "tscene.h"
-#include "PMenu.h" // Asegúrate de incluir el archivo de encabezado del menú
+#include "PMenu.h"
 #include <QDebug>
-#include "pmenu.h"
 #include <cmath>
 #include <QKeyEvent>
 #include "mainwindow.h"
 
-
-
-TScene::TScene(MainWindow *parent) :  mainWindow(parent)
-{
+TScene::TScene(MainWindow *parent) :  mainWindow(parent) {
     initializeScene();
     QImage imagen_fondo(":/imagenes/escenario.png");
     QBrush fondo_escenario(imagen_fondo);
@@ -17,25 +13,25 @@ TScene::TScene(MainWindow *parent) :  mainWindow(parent)
     QPixmap f(":/imagenes/disparo.png");
     fin = new QGraphicsPixmapItem();
     addItem(fin);
-    fin ->setPixmap(f);
+    fin->setPixmap(f);
     fin->setScale(1);
-    fin->setPos(1850,870);
+    fin->setPos(1850, 870);
 
     connect(personaje1, &Personaje::moveBackground, this, &TScene::onMoveBackground);
     timer = new QTimer(this);
-    connect(timer,&QTimer::timeout,this,&TScene::crear_obs);
+    connect(timer, &QTimer::timeout, this, &TScene::crear_obs);
     timer->start(1000);
 
     obs_timer = new QTimer(this);
-    connect(obs_timer,&QTimer::timeout,this,&TScene::actualizar_obstaculos);
+    connect(obs_timer, &QTimer::timeout, this, &TScene::actualizar_obstaculos);
     obs_timer->start(50);
 
     coli = new QTimer(this);
-    connect(coli,&QTimer::timeout,this,&TScene::verificar_colision);
+    connect(coli, &QTimer::timeout, this, &TScene::verificar_colision);
     coli->start(10);
 
     Police = new QTimer(this);
-    connect(Police,&QTimer::timeout, this,&TScene::runPolice);
+    connect(Police, &QTimer::timeout, this, &TScene::runPolice);
     qDebug() << "inicio   " << personaje1->posX;
     QPixmap pol1(":/imagenes/tanque.png");
     policia = new QGraphicsPixmapItem();
@@ -46,12 +42,71 @@ TScene::TScene(MainWindow *parent) :  mainWindow(parent)
     Police->start(60);
 
     fire = new QTimer(this);
-    connect(fire,&QTimer::timeout,this,&TScene::disparo);
+    connect(fire, &QTimer::timeout, this, &TScene::disparo);
     fire->start(25);
+
+    vidaBar = new QProgressBar();
+    vidaBar->setRange(0,5);
+    vidaBar->setValue(5);
+    vidaBar->setFormat("");
+    vidaBar->setGeometry(QRect(1600,10,300,30));
+    vidaBar->setParent(mainWindow);
+    vidaBar->setStyleSheet("QProgressBar {"
+                            "border: 2px solid grey; "
+                            "border-radius: 10px; "
+                            "background-color: red; "
+                            "}"
+                            "QProgressBar::chunk {"
+                            "background-color: green; "
+                            "border-radius: 8px; "
+                            "}");
+    vidaBar->show();
+    progressBar = new QProgressBar();
+    progressBar->setRange(0, 100);
+    progressBar->setValue(0);
+    progressBar->setGeometry(QRect(860, 10, 200, 30));
+    progressBar->setParent(mainWindow);
+    progressBar->setStyleSheet("QProgressBar {"
+                               "border: 2px solid grey; "
+                               "border-radius: 10px; "
+                               "background-color: #E0E0E0; "
+                               "}"
+                               "QProgressBar::chunk {"
+                               "background-color: blue; "
+                               "border-radius: 8px; "
+                               "}");
+
+    progressBar->setFormat("");
+    progressBar->show();
+
+    progressLabel = new QLabel("0%");
+    progressLabel->setParent(mainWindow);
+    progressLabel->setGeometry(progressBar->geometry().x() + progressBar->width() + 10,
+                               progressBar->geometry().y(),
+                               50, 30);
+    progressLabel->show();
+
 }
 
-void TScene::disparo()
-{
+void TScene::removeProgressBar() {
+    if (progressBar) {
+        progressBar->hide();
+        delete progressBar;
+        progressBar = nullptr;
+    }
+    if (progressLabel) {
+        progressLabel->hide();
+        delete progressLabel;
+        progressLabel = nullptr;
+    }
+    if (vidaBar) {
+        vidaBar->hide();
+        delete progressBar;
+        progressBar = nullptr;
+    }
+}
+
+void TScene::disparo() {
     if (personaje1->posX > 850 && !bala) {
         QPixmap b(":/imagenes/disparo.png");
         proyectil = new QGraphicsPixmapItem();
@@ -68,33 +123,32 @@ void TScene::disparo()
         double newY = proyectil->pos().y() + 0.5 * g * std::pow(t, 2);
         proyectil->setPos(newX, newY);
         Distancia_bala += velx;
-        if( personaje1->collidesWithItem(proyectil)){
+        if (personaje1->collidesWithItem(proyectil)) {
             removeItem(proyectil);
             delete proyectil;
             proyectil = nullptr;
             bala = false;
             vida--;
-            if(vida<=0){
-                jugar=false;
-                qDebug()<<"antes  "<<personaje1->jugar_nivel;
-                personaje1-> jugar_nivel = false;
-                qDebug()<<"despues "<<personaje1-> jugar_nivel;
-
-
+            vidaBar->setValue(vida);
+            if (vida <= 0) {
+                jugar = false;
+                qDebug() << "antes  " << personaje1->jugar_nivel;
+                personaje1->jugar_nivel = false;
+                qDebug() << "despues " << personaje1->jugar_nivel;
+                removeProgressBar();
                 Police->stop();
                 fire->stop();
                 obs_timer->stop();
                 coli->stop();
                 timer->stop();
-                PMenu* menu = new PMenu("Perdiste", 3); // Cambia el texto y nivel según sea necesario
+                PMenu* menu = new PMenu("Perdiste", 3);
                 connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
                 connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
-                menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
-                menu->move(600, 100); // Posicionar el menú en la ventana principal
+                menu->setParent(mainWindow);
+                menu->move(672, 100);
                 menu->show();
             }
-        }
-        else if (proyectil->pos().y() > 1000) {
+        } else if (proyectil->pos().y() > 1000) {
             qDebug() << "eliminar bala";
             removeItem(proyectil);
             delete proyectil;
@@ -104,8 +158,7 @@ void TScene::disparo()
     }
 }
 
-void TScene::runPolice()
-{
+void TScene::runPolice() {
     if (personaje1->posX > 850) {
         if (Distancia_tanque < 500) {
             policia->setPos(policia->pos().x() + 50, policia->pos().y());
@@ -114,59 +167,60 @@ void TScene::runPolice()
             policia->setPos(policia->pos().x() + 20, policia->pos().y());
         }
     }
-    if(personaje1->jugar_nivel == false){
+    if (personaje1->jugar_nivel == false) {
         Police->stop();
-        fire ->stop();
-
+        fire->stop();
     }
-    if(jugar==true){
-        if( personaje1->collidesWithItem(policia)){
+    if (jugar == true) {
+        if (personaje1->collidesWithItem(policia)) {
             tanque_actual = policia->pos().x();
-            if(proyectil){
+            if (proyectil) {
                 removeItem(proyectil);
                 delete proyectil;
             }
             proyectil = nullptr;
             bala = false;
-            vida=0;
-            jugar=false;
-            personaje1->jugar_nivel=false;
+            vida = 0;
+            vidaBar->setValue(vida);
+            jugar = false;
             fire->stop();
-
-
+            personaje1->setPixmap(QPixmap(":/imagenes/salto4.png"));
+            personaje1->setPos(personaje1->posX,900);
         }
     }
-    if((jugar==false) && (policia->pos().x() > tanque_actual+600) && (animacion_final==false)){
+    if ((jugar == false) && (policia->pos().x() > tanque_actual + 850) && (animacion_final == false)) {
         Police->stop();
         obs_timer->stop();
         coli->stop();
         timer->stop();
-        animacion_final=true;
-        PMenu* menu = new PMenu("Perdiste", 3); // Cambia el texto y nivel según sea necesario
+        animacion_final = true;
+        personaje1->jugar_nivel = false;
+        progressBar->hide();
+        progressLabel->hide();
+        vidaBar->hide();
+        removeProgressBar();
+        PMenu* menu = new PMenu("Perdiste", 3);
         connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
         connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
-        menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
-        menu->move(600, 100); // Posicionar el menú en la ventana principal
+        menu->setParent(mainWindow);
+        menu->move(672, 100);
         menu->show();
     }
 }
 
-void TScene::initializeScene()
-{
+void TScene::initializeScene() {
     setSceneRect(0, 30, 1920, 1080);
     personaje1 = new Personaje();
     addItem(personaje1);
     personaje1->setFocus();
 }
 
-void TScene::onMoveBackground(int dx)
-{
+void TScene::onMoveBackground(int dx) {
     backgroundOffsetX += dx;
     setSceneRect(backgroundOffsetX, 30, 1920, 1080);
 }
 
-void TScene::crear_obs()
-{
+void TScene::crear_obs() {
     if (personaje1->posX > 850) {
         if (personaje1->game == true) {
             QPixmap cj(":/imagenes/caja.png");
@@ -180,8 +234,7 @@ void TScene::crear_obs()
     }
 }
 
-void TScene::actualizar_obstaculos()
-{
+void TScene::actualizar_obstaculos() {
     for (int i = 0; i < obstaculos.size(); i++) {
         QGraphicsPixmapItem *obstaculo = obstaculos[i];
         if (obstaculo->pos().x() < backgroundOffsetX - 100) {
@@ -191,62 +244,72 @@ void TScene::actualizar_obstaculos()
     }
 }
 
-void TScene::verificar_colision()
-{
+void TScene::verificar_colision() {
+    progreso = personaje1->posX * 100 / 9000;
+    progressBar->setValue(progreso);
+    progressLabel->setText(QString::number(progreso) + "%");
 
-    if(personaje1-> win == true){
+    if (personaje1->win == true) {
         Police->stop();
         obs_timer->stop();
         coli->stop();
         timer->stop();
         fire->stop();
-        PMenu* menu = new PMenu("GANASTE", 3); // Cambia el texto y nivel según sea necesario
+        progressBar->hide();
+        progressLabel->hide();
+        vidaBar->hide();
+        removeProgressBar();
+
+        PMenu* menu = new PMenu("GANASTE", 3);
         connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
         connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
-        menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
-        menu->move(600, 100); // Posicionar el menú en la ventana principal
+        menu->setParent(mainWindow);
+        menu->move(672, 100);
         menu->show();
     }
+
     bool colision_detectada = false;
     for (int i = 0; i < obstaculos.size(); i++) {
         if (personaje1->collidesWithItem(obstaculos[i])) {
             colision_detectada = true;
             break;
         }
-
-        for (int i = 0; i < obstaculos.size(); i++) {
-            if (policia->collidesWithItem(obstaculos[i])) {
-                removeItem(obstaculos[i]);
-                obstaculos.removeAt(i);
-            }
-        }
     }
+
     if (colision_detectada) {
         personaje1->colision = true;
     } else {
         personaje1->colision = false;
     }
 
-}
-
-void TScene::keyPressEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_P) {
-        showPauseMenu();
-    } else {
-        QGraphicsScene::keyPressEvent(event); // Llama a la implementación base
+    for (int i = 0; i < obstaculos.size(); i++) {
+        if (policia->collidesWithItem(obstaculos[i])) {
+            removeItem(obstaculos[i]);
+            obstaculos.removeAt(i);
+        }
     }
 }
 
-void TScene::showPauseMenu()
-{
+
+void TScene::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_P) {
+        showPauseMenu();
+    } else {
+        QGraphicsScene::keyPressEvent(event);
+    }
+}
+
+void TScene::showPauseMenu() {
     PMenu* menu = new PMenu("Pausa", 3, true);
-    jugar=false;
+    jugar = false;
     Police->stop();
     fire->stop();
     obs_timer->stop();
     coli->stop();
     timer->stop();
+    progressBar->hide();
+    progressLabel->hide();
+    vidaBar->hide();
     connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
     connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
     connect(menu, &PMenu::resume, this, [this]() {
@@ -256,6 +319,9 @@ void TScene::showPauseMenu()
         timer->start();
         Police->start();
         fire->start();
+        progressBar->show();
+        progressLabel->show();
+        vidaBar->show();
     });
     menu->show();
 }

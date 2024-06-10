@@ -34,7 +34,6 @@ MainWindow::MainWindow(QWidget *parent)
     graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // Crear el botón para cambiar a la escena de menú
     menuButton = new QPushButton(this);
     QString buttonStyleM = "QPushButton {"
                            "background-image: url(:/imagenes/boton_start);"
@@ -48,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent)
     menuButton->setStyleSheet(buttonStyleM);
     connect(menuButton, &QPushButton::clicked, this, &MainWindow::onMenuButtonClicked);
 
-    // Calcular la posición central del botón
     int buttonWidth = menuButton->width();
     int buttonHeight = menuButton->height();
     int buttonX = ((viewWidth - buttonWidth) / 2) - 396.5;
@@ -56,14 +54,12 @@ MainWindow::MainWindow(QWidget *parent)
     menuButton->setGeometry(0,0,793,250);
     menuButton->move(buttonX, buttonY);
 
-    // Agregar mensaje "J.F.K"
     titulo = new QLabel("J.F.K", this);
     titulo->setStyleSheet("QLabel { color: white; font-size: 200px; }");
     titulo->adjustSize();
     int labelWidth = 396.5-(titulo->width()/2);
     titulo->move(menuButton->x()+labelWidth, menuButton->y() - 250);
 
-    // Agregar créditos
     Cred = new QLabel("Juego proyecto final info 2 \n- Creado por Andrés G y Carlos G.", this);
     Cred->setStyleSheet("QLabel { color: white; font-size: 25px; }");
     Cred->adjustSize();
@@ -99,7 +95,6 @@ void MainWindow::onLevelSelected(int level)
 {
     qDebug() << "nivel seleccionado:" << level;
 
-    // Reiniciar la escena actual antes de crear una nueva, solo si ya existen, tiene muchos qdebug porque me daba error y estaba probando donde era
     if (First_Scene) {
         qDebug() << "elimando First_Scene";
         delete First_Scene;
@@ -181,7 +176,6 @@ void MainWindow::removeVelocimetroView()
 
 void MainWindow::showInitialScene()
 {
-    // Eliminar todas las escenas adicionales y mostrar la initialScene
     if (First_Scene) {
         delete First_Scene;
         First_Scene = nullptr;
@@ -199,5 +193,5 @@ void MainWindow::showInitialScene()
     graphicsView->setScene(initialScene);
     menuButton->show();
     titulo->show();
-    Cred->show(); // Mostrar créditos si estaban ocultos
+    Cred->show();
 }

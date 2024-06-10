@@ -5,7 +5,6 @@
 
 MScene::MScene(QObject *parent) : QGraphicsScene(parent)
 {
-    // Crear y agregar el fondo como QGraphicsPixmapItem
     QGraphicsPixmapItem *backgroundItem = new QGraphicsPixmapItem(QPixmap(":/imagenes/fondo_niv.png"));
     addItem(backgroundItem);
     backgroundItem->setPos(-960, -540); // La mitad de 1920 y 1080 para centrar
@@ -27,7 +26,7 @@ MScene::MScene(QObject *parent) : QGraphicsScene(parent)
                            "}";
 
     QString buttonStyle2 = "QPushButton {"
-                           "background-image: url(:/imagenes/n2_off);"
+                           "background-image: url(:/imagenes/n2_on);"
                            "background-repeat: no-repeat;"
                            "background-position: center;"
                            "border: 5px solid #C0C0C0;"
@@ -36,10 +35,10 @@ MScene::MScene(QObject *parent) : QGraphicsScene(parent)
                            "}";
 
     QString buttonStyle3 = "QPushButton {"
-                           "background-image: url(:/imagenes/n3_off);"
+                           "background-image: url(:/imagenes/n3_on);"
                            "background-repeat: no-repeat;"
                            "background-position: center;"
-                           "border: 5px solid #C0C0C0;"
+                           "border: 5px solid #FFD700;"
                            "width: 400px;"
                            "height: 400px;"
                            "}";
@@ -49,7 +48,7 @@ MScene::MScene(QObject *parent) : QGraphicsScene(parent)
                            "background-repeat: no-repeat;"
                            "background-position: center;"
                            "border: none;"
-                           "width: 70px;"  // Ancho y alto iguales para hacerlo redondo
+                           "width: 70px;"
                            "height: 84px;"
                            "}";
 
@@ -59,44 +58,31 @@ MScene::MScene(QObject *parent) : QGraphicsScene(parent)
     button3->setStyleSheet(buttonStyle3);
     back_menu->setStyleSheet(buttonStyleB);
 
-    // Crear etiquetas de texto para cada botón
-    QLabel *label1 = new QLabel("Nivel 1", button1); // Texto para el botón 1
-    QLabel *label2 = new QLabel("Nivel 2", button2); // Texto para el botón 2
-    QLabel *label3 = new QLabel("Nivel 3", button3); // Texto para el botón 3
+    QLabel *label1 = new QLabel("Nivel 1", button1);
+    QLabel *label2 = new QLabel("Nivel 2", button2);
+    QLabel *label3 = new QLabel("Nivel 3", button3);
 
-    // Establecer el estilo de las etiquetas de texto
-    QString labelStyle = "QLabel { color: black; font-size: 24px; }"; // Estilo de la etiqueta
-
+    QString labelStyle = "QLabel { color: black; font-size: 24px; }";
     label1->setStyleSheet(labelStyle);
     label2->setStyleSheet(labelStyle);
     label3->setStyleSheet(labelStyle);
 
+    label1->move(290, 10);
+    label2->move(290, 10);
+    label3->move(290, 10);
 
-    // Configurar la posición de las etiquetas de texto
-    label1->move(290, 10); // Colocar en la esquina superior derecha del botón 1
-    label2->move(290, 10); // Colocar en la esquina superior derecha del botón 2
-    label3->move(290, 10); // Colocar en la esquina superior derecha del botón 3
-
-
-    // Crear QGraphicsProxyWidget para cada botón y agregar a la escena
     QGraphicsProxyWidget *proxy1 = addWidget(button1);
     QGraphicsProxyWidget *proxy2 = addWidget(button2);
     QGraphicsProxyWidget *proxy3 = addWidget(button3);
     QGraphicsProxyWidget *proxy4 = addWidget(back_menu);
 
+    setSceneRect(-960, -540, 1920, 1080);
 
-
-    // Centrar la escena
-    setSceneRect(-960, -540, 1920, 1080); // Ajustar el tamaño de la escena
-
-    // Posicionar los botones en el centro de la escena
     proxy1->setPos(-650, -200);
     proxy2->setPos(-200, -200);
     proxy3->setPos(250, -200);
     proxy4->setPos(-900, -480);
 
-
-    // Conectar señales de los botones a las ranuras
     connect(button1, &QPushButton::clicked, this, &MScene::onButton1Clicked);
     connect(button2, &QPushButton::clicked, this, &MScene::onButton2Clicked);
     connect(button3, &QPushButton::clicked, this, &MScene::onButton3Clicked);

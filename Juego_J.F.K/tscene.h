@@ -5,8 +5,10 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include "personaje.h"
-#include "PMenu.h" // Incluye el archivo de encabezado del menú
+#include "PMenu.h"
+#include "qlabel.h"
 #include <QList>
+#include <QProgressBar>
 
 class MainWindow;
 
@@ -21,7 +23,7 @@ public:
 
 
 protected:
-    void keyPressEvent(QKeyEvent *event) override; // Sobrescribe keyPressEvent
+    void keyPressEvent(QKeyEvent *event) override;
 
 private slots:
     void onMoveBackground(int dx);
@@ -33,8 +35,8 @@ private slots:
     //void moveBullet();
 
 private:
-    void showPauseMenu(); // Declaración de la nueva función
-
+    void showPauseMenu();
+    void removeProgressBar();
     Personaje *personaje1;
     QTimer *Police;
     QTimer *obs_timer;
@@ -48,6 +50,9 @@ private:
     QGraphicsPixmapItem *proyectil;
     QList<QGraphicsPixmapItem*>obstaculos;
     QGraphicsPixmapItem *fin;
+    QProgressBar *vidaBar;
+    QProgressBar *progressBar;
+    QLabel *progressLabel;
 
     int pos = 1400;
     int backgroundOffsetX;
@@ -57,7 +62,8 @@ private:
     int Distancia_tanque=0;
     int velx = 20;
     int angulo = 0;
-    int vida = 30;
+    int vida = 5;
+    int progreso;
     void initializeScene();
     bool animacion_final = false;
     bool bala = false;

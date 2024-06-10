@@ -6,6 +6,7 @@
 #include <QLCDNumber>
 #include "mainwindow.h"
 #include "gscene.h"
+#include <QDebug>
 
 FScene::FScene(MainWindow *parent)
     : QGraphicsScene(117, 0, 1920, 1080, parent),
@@ -16,18 +17,29 @@ FScene::FScene(MainWindow *parent)
     mainWindow(parent)
 {
     setBackgroundBrush(QBrush(QPixmap(":/imagenes/fondo_car.jpg")));
+    QPixmap av(":/imagenes/avion.png");
+    Avion = new QGraphicsPixmapItem();
+    addItem(Avion);
+    Avion->setPixmap(av);
+    Avion->setScale(1);
+    Avion->setPos(1050, -80000);
+
+
 
     aceleracion = new QTimer(this);
     connect(aceleracion, &QTimer::timeout, this, &FScene::acelerar);
-    aceleracion->start(20);
+
+    startG = new QTimer(this);
+    connect(startG, &QTimer::timeout, this, &FScene::startgame);
+    startG->start(20);
 
     car = new Car(":/imagenes/carro_jfk.png");
     addItem(car);
-    car->setPos(1138, 800); // límite a la izquierda es 619 en x y a la derecha 1370 en x, inicial x 1138
+    car->setPos(1138, 1100); // límite a la izquierda es 619 en x y a la derecha 1370 en x, inicial x 1138
 
-    obstacleTimer = new QTimer(this); // Timer para generar obstáculos
+    obstacleTimer = new QTimer(this);
     connect(obstacleTimer, &QTimer::timeout, this, &FScene::spawnObstacle);
-    obstacleTimer->start(cant_obst); // con una regla de 3 cambio la velocidad de la aparicion de obstaculos para que se vea mas fluido
+
 }
 
 void FScene::keyPressEvent(QKeyEvent *e) {
@@ -68,16 +80,20 @@ void FScene::keyPressEvent(QKeyEvent *e) {
 
     // Manejar la tecla P para pausar
     if (keysPressed.contains(Qt::Key_P)) {
-        PMenu* menu = new PMenu("Pausa", 1, true); // Texto "Pausa" y mostrar botón "Reanudar"
+        progressBar->hide();
+        progressLabel->hide();
+        PMenu* menu = new PMenu("Pausa", 1, true);
         connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
         connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
         connect(menu, &PMenu::resume, this, [this]() {
             jugar = true;
             aceleracion->start();
             obstacleTimer->start();
+            progressBar->show();
+            progressLabel->show();
         });
         menu->setParent(mainWindow);
-        menu->move(600, 100);
+        menu->move(672, 100);
         menu->show();
         jugar = false;
         aceleracion->stop();
@@ -99,20 +115,40 @@ void FScene::keyReleaseEvent(QKeyEvent *e) {
 void FScene::acelerar() {
     QPointF currentCarPos = car->pos();
     QPointF currentPos = sceneRect().topLeft();
-
+    progreso = -(currentCarPos.y()-800) * 100 / 79028;
+    progressBar->setValue(progreso);
+    progressLabel->setText(QString::number(progreso) + "%");
     if (!keysPressed.contains(Qt::Key_W)) {
         if (vel_y > 0) {
             vel_y--;
+
         } else if (vel_y<0) {
             vel_y++;
         }
-    } else if (jugar == false) {
+
+    }
+    else if (jugar == false) {
         if (vel_y > 0) {
             vel_y--;
         } else if (vel_y<0) {
             vel_y++;
         }
     }
+    if(win==true){
+        vel_y=10;
+        if(car->collidesWithItem(Avion)){
+            PMenu* menu = new PMenu("GANASTE", 1);
+            connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+            connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+            menu->setParent(mainWindow);
+            menu->move(672, 100);
+            menu->show();
+            aceleracion->stop();
+
+        }
+    }
+
+
     currentPos.setY(currentPos.y() - vel_y);
     setSceneRect(QRectF(currentPos, sceneRect().size()));
 
@@ -126,14 +162,15 @@ void FScene::acelerar() {
     // Actualizar la posición del coche
     car->setPos(currentCarPos.x() + vel_x, currentCarPos.y() - vel_y);
 
+
     // Verificar colisión con obstáculos
-    if(!humoCreado){
+    if(!humoCreado && win==false){
         foreach (QGraphicsItem *item, items()) {
             if (item->type() == QGraphicsPixmapItem::Type && item != car) {
                 if (car->collidesWithItem(item)) {
                     vel_x = 0;
                     jugar = false;
-                    if((item->pos().x()>=1150) && (item->pos().x()<=1370)){ //1150 to 1370
+                    if((item->pos().x()>=1150) && (item->pos().x()<=1370)){ //1150 a 1370
                         // Si hay colisión, ajusta las velocidades
                         vel_y = (vel_y + 50) / 2;
                         vel_obst = (vel_y + 50) / 2;
@@ -155,35 +192,48 @@ void FScene::acelerar() {
                             carro_choque->updateVelocity(new_vel_choque);
                         }
                         vel_y = (-50)/2;
-                        choque = new QTimer(this); // Timer para generar obstáculos
+                        choque = new QTimer(this);
                         connect(obstacleTimer, &QTimer::timeout, this, &FScene::vel_choque);
                         choque->start(20);
                         obstacleTimer->stop();
 
 
                     }
-                    // Crear imagen de humo solo una vez
+
                     collisionImage = new QGraphicsPixmapItem(QPixmap(":/imagenes/humo.png"));
                     addItem(collisionImage);
-                    humoCreado = true;
-
-                    // Salir del bucle de verificación de colisión
+                    humoCreado = true;             
                     break;
                 }
             }
         }
     }
-    // Actualizar la posición del humo si ha sido creado
+
     if (humoCreado) {
         collisionImage->setPos(currentCarPos.x() + 80, currentCarPos.y() - 34);
         if (vel_y == 0) {
-            PMenu* menu = new PMenu("Perdiste", 1); // Cambia el texto y nivel según sea necesario
+            progressBar->hide();
+            progressLabel->hide();
+            PMenu* menu = new PMenu("Perdiste", 1);
             connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
             connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
-            menu->setParent(mainWindow); // Asegurar que el menú se muestre en la ventana principal
-            menu->move(600, 100); // Posicionar el menú en la ventana principal
+            menu->setParent(mainWindow);
+            menu->move(672, 100);
             menu->show();
             aceleracion->stop();
+            obstacleTimer->stop();
+        }
+    }
+    if(jugar == true){
+        distanciaY += vel_y;
+        if(distanciaY>=79028){
+            progressBar->hide();
+            progressLabel->hide();
+            jugar = false;
+            win = true;
+            qDebug() << currentCarPos;
+            vel_y=15;
+            obstacleTimer->stop();
         }
     }
 
@@ -217,6 +267,43 @@ void FScene::spawnObstacle() {
         addItem(obstacle);
         obstacle->startMoving();
     }
+}
+
+void FScene::startgame(){
+    QPointF currentCarPos = car->pos();
+    car->setPos(currentCarPos.x(), currentCarPos.y() - 20);
+    if(currentCarPos.y()<=800){
+        progressBar = new QProgressBar();
+        progressBar->setRange(0, 100);
+        progressBar->setValue(0);
+        progressBar->setGeometry(QRect(860, 10, 200, 30));
+        progressBar->setParent(mainWindow);
+        progressBar->setStyleSheet("QProgressBar {"
+                                   "border: 2px solid grey; "
+                                   "border-radius: 10px; "
+                                   "background-color: #E0E0E0; "
+                                   "}"
+                                   "QProgressBar::chunk {"
+                                   "background-color: blue; "
+                                   "border-radius: 8px; "
+                                   "}");
+
+        progressBar->setFormat("");
+        progressBar->show();
+
+        progressLabel = new QLabel("0%");
+        progressLabel->setParent(mainWindow);
+        progressLabel->setGeometry(progressBar->geometry().x() + progressBar->width() + 10,
+                                   progressBar->geometry().y(),
+                                   50, 30);
+        progressLabel->show();
+        jugar=true;
+        aceleracion->start(15);
+        obstacleTimer->start(cant_obst); // con una regla de 3 cambio la velocidad de la aparicion de obstaculos para que se vea mas fluido
+        startG->stop();
+    }
+
+
 }
 
 void FScene::vel_choque(){

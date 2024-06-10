@@ -7,6 +7,8 @@
 #include <QSet>
 #include "car.h"
 #include "pmenu.h"
+#include "qlabel.h"
+#include "qprogressbar.h"
 
 class MainWindow;
 
@@ -25,11 +27,15 @@ private slots:
 private:
     QGraphicsPixmapItem *mCarretera;
     QGraphicsPixmapItem *collisionImage;
+    QGraphicsPixmapItem *Avion;
     Car *car;
     QTimer *aceleracion;
-    QTimer *obstacleTimer; // Timer para los obstáculos
+    QTimer *obstacleTimer;
     QTimer *choque;
+    QTimer *startG;
     Obstacle *carro_choque;
+    QProgressBar *progressBar;
+    QLabel *progressLabel;
     int vel_y;
     int vel_x;
     int divisor;
@@ -38,9 +44,13 @@ private:
     int pos_obst;
     int cant_obst = 2000;
     int vel_obst = 50;
+    int distanciaY = 0;
+    int progreso = 0;
 
-    bool jugar = true;
-    bool humoCreado = false; // Humo 1 vez
+    bool win = false;
+    bool jugar = false;
+    bool humoCreado = false;
+    void startgame();
 
     QSet<int> keysPressed;
     MainWindow *mainWindow;
