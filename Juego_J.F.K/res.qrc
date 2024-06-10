@@ -53,5 +53,9 @@
         <file>imagenes/tanque.png</file>
         <file>imagenes/avion.png</file>
         <file>imagenes/menu.png</file>
+        <file>imagenes/pot.png</file>
+        <file>imagenes/carro_jfk_p.png</file>
+        <file>imagenes/carro_jfk_der_p.png</file>
+        <file>imagenes/carro_jfk_izq_p.png</file>
     </qresource>
 </RCC>

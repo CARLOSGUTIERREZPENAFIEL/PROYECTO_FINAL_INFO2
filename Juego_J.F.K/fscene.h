@@ -6,7 +6,6 @@
 #include <QTimer>
 #include <QSet>
 #include "car.h"
-#include "pmenu.h"
 #include "qlabel.h"
 #include "qprogressbar.h"
 
@@ -17,17 +16,30 @@ class FScene : public QGraphicsScene
     Q_OBJECT
 public:
     FScene(MainWindow *parent = nullptr);
+
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void keyReleaseEvent(QKeyEvent *e) override;
+
 private slots:
     void acelerar();
     void spawnObstacle();
     void vel_choque();
+    void checkHighSpeed();
+    void handlePotCollision();
+    void removePotEffect();
+    void spawnPot();
+
 private:
+    QTimer *highSpeedTimer;
+    QTimer *potTimer;
+    QTimer *potSpawnTimer;
+    bool potSpawnActive;
+    int highSpeedCounter;
     QGraphicsPixmapItem *mCarretera;
     QGraphicsPixmapItem *collisionImage;
     QGraphicsPixmapItem *Avion;
+    QGraphicsPixmapItem *pot;
     Car *car;
     QTimer *aceleracion;
     QTimer *obstacleTimer;
@@ -39,7 +51,7 @@ private:
     int vel_y;
     int vel_x;
     int divisor;
-    int new_vel_choque=0;
+    int new_vel_choque = 0;
     int contador_posicion_y;
     int pos_obst;
     int cant_obst = 2000;
@@ -50,6 +62,7 @@ private:
     bool win = false;
     bool jugar = false;
     bool humoCreado = false;
+    bool potActive = false;
     void startgame();
 
     QSet<int> keysPressed;

@@ -103,9 +103,9 @@ void MScene::onButton2Clicked()
 
 void MScene::onButton3Clicked()
 {
-
-    emit levelSelected(3);
-
+    if(nivel_total>=3){
+        emit levelSelected(3);
+    }
 }
 void MScene::onExitClicked()
 {

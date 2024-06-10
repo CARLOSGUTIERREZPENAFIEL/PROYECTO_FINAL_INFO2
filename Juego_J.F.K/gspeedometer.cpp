@@ -2,6 +2,21 @@
 #include <QGraphicsScene>
 #include <QtMath>
 
+// Definición de las constantes de posición
+enum Position {
+    FIRST_POS = 0,
+    SECOND_POS,
+    THIRD_POS,
+    FOURTH_POS,
+    FIFTH_POS,
+    SIXTH_POS,
+    SEVENTH_POS,
+    EIGHTH_POS,
+    NINTH_POS,
+    TENTH_POS,
+    NUM_POSITIONS // Esta constante ayuda a calcular las proporciones
+};
+
 static QPointF getFirstPoint()
 {
     const double sWidth = 248.0;
@@ -38,7 +53,8 @@ void GSpeedometer::decrementPosition(int steps)
 
 void GSpeedometer::updatePositionBasedOnSpeed(int speed)
 {
-    mPosition = speed / 10;
+    // Mapear speed de 0 a 50 a posiciones de FIRST_POS a TENTH_POS
+    mPosition = (speed * (NUM_POSITIONS - 1)) / 50;
     if (mPosition > TENTH_POS)
     {
         mPosition = TENTH_POS;

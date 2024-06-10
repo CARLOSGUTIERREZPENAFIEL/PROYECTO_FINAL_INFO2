@@ -3,6 +3,7 @@
 
 #include "mscene.h"
 #include "tscene.h"
+#include "twoscene.h"
 #include "qlcdnumber.h"
 #include <QMainWindow>
 #include <QGraphicsView>
@@ -41,6 +42,7 @@ private:
     FScene *First_Scene;
     GScene *Vel_FScene;
     TScene *Third_Scene;
+    twoscene *Two_Scene;
     MScene *Menu_Scene;
     QGraphicsScene *initialScene;
     QGraphicsView *graphicsView;

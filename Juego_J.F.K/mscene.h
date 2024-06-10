@@ -27,7 +27,7 @@ private:
     QPushButton *button3;
     QPushButton *back_menu;
 
-    int nivel_total=1;
+    int nivel_total=3;
 };
 
 #endif // MSCENE_H

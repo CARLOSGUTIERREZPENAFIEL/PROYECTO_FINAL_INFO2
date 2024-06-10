@@ -14,11 +14,16 @@ public:
     void turnRight();
     void resetPixmap();
     void updatePosition(qreal vel_x, qreal vel_y);
+    void setPoweredUp(bool poweredUp);
 
 private:
     QPixmap carPixmap;
     QPixmap carPixmapLeft;
     QPixmap carPixmapRight;
+    QPixmap carPixmapPoweredUp;
+    QPixmap carPixmapLeftPoweredUp;
+    QPixmap carPixmapRightPoweredUp;
+    bool poweredUp;
 };
 
 class Obstacle : public QObject, public QGraphicsPixmapItem

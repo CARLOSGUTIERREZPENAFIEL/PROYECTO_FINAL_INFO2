@@ -5,26 +5,51 @@ Car::Car(const QString &filePath, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent),
     carPixmap(filePath),
     carPixmapLeft(":/imagenes/carro_jfk_izq.png"),
-    carPixmapRight(":/imagenes/carro_jfk_der.png")
+    carPixmapRight(":/imagenes/carro_jfk_der.png"),
+    carPixmapPoweredUp(":/imagenes/carro_jfk_p.png"),
+    carPixmapLeftPoweredUp(":/imagenes/carro_jfk_izq_p.png"),
+    carPixmapRightPoweredUp(":/imagenes/carro_jfk_der_p.png"),
+    poweredUp(false)
 {
     setPixmap(carPixmap);
     setScale(0.25);
 }
 
 void Car::turnLeft() {
-    setPixmap(carPixmapLeft);
+    if (poweredUp) {
+        setPixmap(carPixmapLeftPoweredUp);
+    } else {
+        setPixmap(carPixmapLeft);
+    }
 }
 
 void Car::turnRight() {
-    setPixmap(carPixmapRight);
+    if (poweredUp) {
+        setPixmap(carPixmapRightPoweredUp);
+    } else {
+        setPixmap(carPixmapRight);
+    }
 }
 
 void Car::resetPixmap() {
-    setPixmap(carPixmap);
+    if (poweredUp) {
+        setPixmap(carPixmapPoweredUp);
+    } else {
+        setPixmap(carPixmap);
+    }
 }
 
 void Car::updatePosition(qreal vel_x, qreal vel_y) {
     setPos(pos().x() + vel_x, pos().y() - vel_y);
+}
+
+void Car::setPoweredUp(bool powered) {
+    poweredUp = powered;
+    if (poweredUp) {
+        setPixmap(carPixmapPoweredUp);
+    } else {
+        setPixmap(carPixmap);
+    }
 }
 
 Obstacle::Obstacle(const QString &filePath, qreal pos_obst, int vel_obst, qreal car_pos, QGraphicsItem *parent)
@@ -71,15 +96,13 @@ void Obstacle::moveDown() {
         }
     } else {
         setPos(pos().x(), pos().y() + vel_obsta);
-        if (pos().y()>car_posi) {
+        if (pos().y() > car_posi) {
             if (scene()) {
                 scene()->removeItem(this);
             }
             delete this;
         }
     }
-
-
 }
 
 void Obstacle::updateVelocity(int new_vel_obst) {
