@@ -141,9 +141,9 @@ void MainWindow::onLevelSelected(int level)
         Cred->hide();
 
     } else if (level == 2) {
-        qDebug() << "Crea First_Scene para level 2";
+        qDebug() << "Crea Two_Scene para level 2";
         Two_Scene = new twoscene(this);
-        graphicsView->setScene(First_Scene);
+        graphicsView->setScene(Two_Scene);
         Cred->hide();
 
     } else if (level == 3) {

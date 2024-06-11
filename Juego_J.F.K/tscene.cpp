@@ -5,7 +5,7 @@
 #include <QKeyEvent>
 #include "mainwindow.h"
 
-TScene::TScene(MainWindow *parent) :  mainWindow(parent) {
+TScene::TScene(MainWindow *parent) : mainWindow(parent) {
     initializeScene();
     QImage imagen_fondo(":/imagenes/escenario.png");
     QBrush fondo_escenario(imagen_fondo);
@@ -46,21 +46,22 @@ TScene::TScene(MainWindow *parent) :  mainWindow(parent) {
     fire->start(25);
 
     vidaBar = new QProgressBar();
-    vidaBar->setRange(0,5);
+    vidaBar->setRange(0, 5);
     vidaBar->setValue(5);
     vidaBar->setFormat("");
-    vidaBar->setGeometry(QRect(1600,10,300,30));
+    vidaBar->setGeometry(QRect(1600, 10, 300, 30));
     vidaBar->setParent(mainWindow);
     vidaBar->setStyleSheet("QProgressBar {"
-                            "border: 2px solid grey; "
-                            "border-radius: 10px; "
-                            "background-color: red; "
-                            "}"
-                            "QProgressBar::chunk {"
-                            "background-color: green; "
-                            "border-radius: 8px; "
-                            "}");
+                           "border: 2px solid grey; "
+                           "border-radius: 10px; "
+                           "background-color: red; "
+                           "}"
+                           "QProgressBar::chunk {"
+                           "background-color: green; "
+                           "border-radius: 8px; "
+                           "}");
     vidaBar->show();
+
     progressBar = new QProgressBar();
     progressBar->setRange(0, 100);
     progressBar->setValue(0);
@@ -85,7 +86,6 @@ TScene::TScene(MainWindow *parent) :  mainWindow(parent) {
                                progressBar->geometry().y(),
                                50, 30);
     progressLabel->show();
-
 }
 
 void TScene::removeProgressBar() {
@@ -101,8 +101,8 @@ void TScene::removeProgressBar() {
     }
     if (vidaBar) {
         vidaBar->hide();
-        delete progressBar;
-        progressBar = nullptr;
+        delete vidaBar;
+        vidaBar = nullptr;
     }
 }
 
@@ -148,12 +148,35 @@ void TScene::disparo() {
                 menu->move(672, 100);
                 menu->show();
             }
-        } else if (proyectil->pos().y() > 1000) {
-            qDebug() << "eliminar bala";
-            removeItem(proyectil);
-            delete proyectil;
-            proyectil = nullptr;
-            bala = false;
+        } else {
+            bool collision_with_obstacle = false;
+            QGraphicsPixmapItem *collided_obstacle = nullptr;
+            for (auto obstacle : obstaculos) {
+                if (proyectil->collidesWithItem(obstacle)) {
+                    collision_with_obstacle = true;
+                    collided_obstacle = obstacle;
+                    break;
+                }
+            }
+
+            if (collision_with_obstacle) {
+                removeItem(proyectil);
+                delete proyectil;
+                proyectil = nullptr;
+                bala = false;
+
+                if (collided_obstacle) {
+                    removeItem(collided_obstacle);
+                    obstaculos.removeOne(collided_obstacle);
+                    delete collided_obstacle;
+                }
+            } else if (proyectil->pos().y() > 1000) {
+                qDebug() << "eliminar bala";
+                removeItem(proyectil);
+                delete proyectil;
+                proyectil = nullptr;
+                bala = false;
+            }
         }
     }
 }
@@ -185,7 +208,7 @@ void TScene::runPolice() {
             jugar = false;
             fire->stop();
             personaje1->setPixmap(QPixmap(":/imagenes/salto4.png"));
-            personaje1->setPos(personaje1->posX,900);
+            personaje1->setPos(personaje1->posX, 900);
         }
     }
     if ((jugar == false) && (policia->pos().x() > tanque_actual + 850) && (animacion_final == false)) {
@@ -222,7 +245,7 @@ void TScene::onMoveBackground(int dx) {
 
 void TScene::crear_obs() {
     if (personaje1->posX > 850) {
-        if (personaje1->game == true) {
+        if (personaje1->game) {
             QPixmap cj(":/imagenes/caja.png");
             caja = new QGraphicsPixmapItem();
             addItem(caja);
@@ -249,7 +272,7 @@ void TScene::verificar_colision() {
     progressBar->setValue(progreso);
     progressLabel->setText(QString::number(progreso) + "%");
 
-    if (personaje1->win == true) {
+    if (personaje1->win) {
         Police->stop();
         obs_timer->stop();
         coli->stop();
@@ -289,7 +312,6 @@ void TScene::verificar_colision() {
         }
     }
 }
-
 
 void TScene::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_P) {

@@ -27,7 +27,7 @@ FScene::FScene(MainWindow *parent)
     Avion->setPos(640, -80000);
 
     highSpeedTimer = new QTimer(this);
-    highSpeedTimer->setInterval(1000); // Check every second
+    highSpeedTimer->setInterval(1000);
     connect(highSpeedTimer, &QTimer::timeout, this, &FScene::checkHighSpeed);
 
     aceleracion = new QTimer(this);
@@ -49,7 +49,7 @@ FScene::FScene(MainWindow *parent)
     connect(potTimer, &QTimer::timeout, this, &FScene::removePotEffect);
 
     potSpawnTimer = new QTimer(this);
-    potSpawnTimer->setInterval(2000); // Set interval to 2 seconds
+    potSpawnTimer->setInterval(4000);
     connect(potSpawnTimer, &QTimer::timeout, this, &FScene::spawnPot);
     potSpawnTimer->start();
 }
@@ -103,6 +103,7 @@ void FScene::keyPressEvent(QKeyEvent *e) {
             obstacleTimer->start();
             progressBar->show();
             progressLabel->show();
+            potSpawnTimer->start();
         });
         menu->setParent(mainWindow);
         menu->move(672, 100);
@@ -110,6 +111,7 @@ void FScene::keyPressEvent(QKeyEvent *e) {
         jugar = false;
         aceleracion->stop();
         obstacleTimer->stop();
+        potSpawnTimer->stop();
     }
 }
 
@@ -131,36 +133,38 @@ void FScene::checkHighSpeed() {
 
     if (vel_y >= 40) {
         highSpeedCounter++;
-        if (highSpeedCounter >= 3) {
-            QPointF currentCarPos = car->pos();
-            foreach (QGraphicsItem *item, items()) {
-                if (item->type() == QGraphicsPixmapItem::Type && item != car && item != Avion) {
-                    removeItem(item);
-                    delete item;
-                }
-            }
-            collisionImage = new QGraphicsPixmapItem(QPixmap(":/imagenes/humo.png"));
-            addItem(collisionImage);
-            collisionImage->setPos(currentCarPos.x() + 80, currentCarPos.y());
-            progressBar->hide();
-            progressLabel->hide();
-            PMenu* menu = new PMenu("Perdiste", 1);
-            connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
-            connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
-            menu->setParent(mainWindow);
-            menu->move(672, 100);
-            menu->show();
-            aceleracion->stop();
-            obstacleTimer->stop();
-            jugar = false;
-            highSpeedTimer->stop();
-        }
     } else {
         highSpeedCounter = 0;
     }
 }
 
 void FScene::acelerar() {
+    if (highSpeedCounter >= 3) {
+        QPointF currentCarPos = car->pos();
+        foreach (QGraphicsItem *item, items()) {
+            if (item->type() == QGraphicsPixmapItem::Type && item != car && item != Avion) {
+                removeItem(item);
+                delete item;
+            }
+        }
+        collisionImage = new QGraphicsPixmapItem(QPixmap(":/imagenes/humo.png"));
+        addItem(collisionImage);
+        collisionImage->setPos(currentCarPos.x() + 80, currentCarPos.y());
+        progressBar->hide();
+        progressLabel->hide();
+        PMenu* menu = new PMenu("Perdiste", 1);
+        connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+        connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+        menu->setParent(mainWindow);
+        menu->move(672, 100);
+        menu->show();
+        aceleracion->stop();
+        obstacleTimer->stop();
+        jugar = false;
+        highSpeedTimer->stop();
+        potSpawnTimer->stop();
+        return;
+    }
     if (vel_y >= 40) {
         if (!highSpeedTimer->isActive() && !potActive) {
             highSpeedTimer->start();
@@ -205,6 +209,7 @@ void FScene::acelerar() {
             menu->move(672, 100);
             menu->show();
             aceleracion->stop();
+            potSpawnTimer->stop();
         }
     }
 
@@ -257,7 +262,7 @@ void FScene::acelerar() {
                             choque->start(20);
                             obstacleTimer->stop();
                         }
-
+                        potSpawnTimer->stop();
                         collisionImage = new QGraphicsPixmapItem(QPixmap(":/imagenes/humo.png"));
                         addItem(collisionImage);
                         humoCreado = true;
@@ -286,6 +291,7 @@ void FScene::acelerar() {
             menu->show();
             aceleracion->stop();
             obstacleTimer->stop();
+
         }
     }
     if (jugar == true) {
@@ -412,7 +418,8 @@ void FScene::spawnPot() {
 
     pot = new QGraphicsPixmapItem(QPixmap(":/imagenes/pot.png"));
     int potX = (rand() % 2 == 0) ? (640 + rand() % (890 - 640)) : (1150 + rand() % (1370 - 1150));
-    int potY = car->pos().y() - 500;
+    int potY = car->pos().y() - 900;
     addItem(pot);
     pot->setPos(potX, potY);
+    pot->setScale(0.3);
 }

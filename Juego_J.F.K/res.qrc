@@ -57,5 +57,11 @@
         <file>imagenes/carro_jfk_p.png</file>
         <file>imagenes/carro_jfk_der_p.png</file>
         <file>imagenes/carro_jfk_izq_p.png</file>
+        <file>imagenes/calle2.png</file>
+        <file>imagenes/carroDER2.png</file>
+        <file>imagenes/carroIZQ2.png</file>
+        <file>imagenes/carroDER2p.png</file>
+        <file>imagenes/carroIZQ2p.png</file>
+        <file>imagenes/disparo2.png</file>
     </qresource>
 </RCC>

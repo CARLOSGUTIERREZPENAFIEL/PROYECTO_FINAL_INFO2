@@ -13,23 +13,27 @@ SOURCES += \
     fscene.cpp \
     gspeedometer.cpp \
     gscene.cpp \
+    jfk.cpp \
     main.cpp \
     mainwindow.cpp \
     mscene.cpp \
     personaje.cpp \
     pmenu.cpp \
-    tscene.cpp
+    tscene.cpp \
+    twoscene.cpp
 
 HEADERS += \
     car.h \
     fscene.h \
     gspeedometer.h \
     gscene.h \
+    jfk.h \
     mainwindow.h \
     mscene.h \
     personaje.h \
     pmenu.h \
-    tscene.h
+    tscene.h \
+    twoscene.h
 
 FORMS += \
     mainwindow.ui

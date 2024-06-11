@@ -7,7 +7,6 @@
 #include <QPixmap>
 #include <QKeyEvent>
 #include <QList>
-#include "PMenu.h"
 
 class Personaje : public QObject, public QGraphicsPixmapItem
 {
@@ -21,22 +20,19 @@ public:
     bool game = false;
     bool colision = false;
     bool inicio = false;
-    bool jugar_nivel =  true;
+    bool jugar_nivel = true;
     bool win = false;
 
 signals:
-    void moveBackground(int dx);  // Declaración de la señal
+    void moveBackground(int dx);
 
 private slots:
     void runPlayer();
     void jumpPlayer();
-    void updateMovement();
-
 
 private:
     QTimer *timer;
     QTimer *timer2;
-    QTimer *movementTimer;
     QSet<int> keysPressed;
     int lugar_saltoX = 0;
     int lugar_saltoY = 0;
@@ -46,10 +42,10 @@ private:
     bool subir = true;
     bool salto = true;
     bool coli = false;
-
-
+    bool saltando = false;
 
     void initializePlayer();
+    void moveRight();
 };
 
-#endif // PERSONAJE_H
+#endif // PERSONAJE_H
