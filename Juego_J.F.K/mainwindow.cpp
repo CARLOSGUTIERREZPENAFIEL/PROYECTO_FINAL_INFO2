@@ -12,7 +12,7 @@
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), First_Scene(nullptr), Vel_FScene(nullptr), Third_Scene(nullptr), View_Velocimetro(nullptr), Menu_Scene(nullptr)
+    : QMainWindow(parent), ui(new Ui::MainWindow), First_Scene(nullptr), Vel_FScene(nullptr), Third_Scene(nullptr), Two_Scene(nullptr), Menu_Scene(nullptr), View_Velocimetro(nullptr)
 {
     ui->setupUi(this);
 
@@ -78,6 +78,7 @@ MainWindow::~MainWindow()
     delete Vel_FScene;
     delete Menu_Scene;
     delete Third_Scene;
+    delete Two_Scene;
 }
 
 void MainWindow::onMenuButtonClicked()
@@ -112,7 +113,11 @@ void MainWindow::onLevelSelected(int level)
         delete Third_Scene;
         Third_Scene = nullptr;
     }
-
+    if (Two_Scene) {
+        qDebug() << "eliminando Two_Scene";
+        delete Two_Scene;
+        Two_Scene = nullptr;
+    }
 
     if (level == 1) {
         qDebug() << "Crea First_Scene";
@@ -189,7 +194,10 @@ void MainWindow::showInitialScene()
         delete Third_Scene;
         Third_Scene = nullptr;
     }
-
+    if (Two_Scene) {
+        delete Two_Scene;
+        Two_Scene = nullptr;
+    }
     graphicsView->setScene(initialScene);
     menuButton->show();
     titulo->show();

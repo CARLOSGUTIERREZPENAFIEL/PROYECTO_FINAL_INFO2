@@ -26,6 +26,9 @@ private:
     QPushButton *button2;
     QPushButton *button3;
     QPushButton *back_menu;
+    QString buttonStyle1;
+    QString buttonStyle2;
+    QString buttonStyle3;
 
     int nivel_total=3;
 };

@@ -16,32 +16,55 @@ MScene::MScene(QObject *parent) : QGraphicsScene(parent)
     back_menu = new QPushButton();
 
     // Estilos de los botones
-    QString buttonStyle1 = "QPushButton {"
-                           "background-image: url(:/imagenes/n1_on);"
-                           "background-repeat: no-repeat;"
-                           "background-position: center;"
-                           "border: 5px solid #FFD700;"
-                           "width: 400px;"
-                           "height: 400px;"
-                           "}";
+    buttonStyle1 = "QPushButton {"
+                   "background-image: url(:/imagenes/n1_on);"
+                   "background-repeat: no-repeat;"
+                   "background-position: center;"
+                   "border: 5px solid #FFD700;"
+                   "width: 400px;"
+                   "height: 400px;"
+                   "}";
+    if(nivel_total>=2){
+        buttonStyle2 = "QPushButton {"
+                       "background-image: url(:/imagenes/n2_on);"
+                       "background-repeat: no-repeat;"
+                       "background-position: center;"
+                       "border: 5px solid #FFD700;"
+                       "width: 400px;"
+                       "height: 400px;"
+                       "}";
+    }
+    else {
+        buttonStyle2 = "QPushButton {"
+                       "background-image: url(:/imagenes/n2_off);"
+                       "background-repeat: no-repeat;"
+                       "background-position: center;"
+                       "border: 5px solid #C0C0C0;"
+                       "width: 400px;"
+                       "height: 400px;"
+                       "}";
+    }
 
-    QString buttonStyle2 = "QPushButton {"
-                           "background-image: url(:/imagenes/n2_on);"
-                           "background-repeat: no-repeat;"
-                           "background-position: center;"
-                           "border: 5px solid #C0C0C0;"
-                           "width: 400px;"
-                           "height: 400px;"
-                           "}";
+    if(nivel_total>=3){
+        buttonStyle3 = "QPushButton {"
+                       "background-image: url(:/imagenes/n3_on);"
+                       "background-repeat: no-repeat;"
+                       "background-position: center;"
+                       "border: 5px solid #FFD700;"
+                       "width: 400px;"
+                       "height: 400px;"
+                       "}";
+    } else {
+        buttonStyle3 = "QPushButton {"
+                       "background-image: url(:/imagenes/n3_off);"
+                       "background-repeat: no-repeat;"
+                       "background-position: center;"
+                       "border: 5px solid #C0C0C0;"
+                       "width: 400px;"
+                       "height: 400px;"
+                       "}";
+    }
 
-    QString buttonStyle3 = "QPushButton {"
-                           "background-image: url(:/imagenes/n3_on);"
-                           "background-repeat: no-repeat;"
-                           "background-position: center;"
-                           "border: 5px solid #FFD700;"
-                           "width: 400px;"
-                           "height: 400px;"
-                           "}";
     QString buttonStyleB = "QPushButton {"
                            "background-color: transparent;"
                            "background-image: url(:/imagenes/back);"

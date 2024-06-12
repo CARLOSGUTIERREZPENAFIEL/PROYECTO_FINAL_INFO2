@@ -57,11 +57,15 @@ private:
     QTimer *temporizadorJuego;
     QTimer *temporizadorEliminarPotenciador;
     QTimer *temporizadorTerminarPotenciador;
+    QTimer singleShot;
     int vidas;
     int puntuacion;
     bool juegoPausado;
     int tiempoTranscurrido;
     bool potenciadorActivo;
+    bool final=false;
+
+    QSet<int> keysPressed;
 };
 
 #endif // TWOSCENE_H

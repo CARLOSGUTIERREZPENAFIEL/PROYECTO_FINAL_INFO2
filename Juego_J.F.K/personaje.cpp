@@ -6,13 +6,21 @@ Personaje::Personaje(QGraphicsItem *parent) : QGraphicsPixmapItem(parent)
 {
     initializePlayer();
 
+
     timer = new QTimer(this);
     timer->start(80);
     connect(timer, &QTimer::timeout, this, &Personaje::runPlayer);
 
     timer2 = new QTimer(this);
     connect(timer2, &QTimer::timeout, this, &Personaje::jumpPlayer);
+
+    movementTimer = new QTimer(this);
+    movementTimer->start(30);
+    connect(movementTimer, &QTimer::timeout, this, &Personaje::updateMovement);
+
 }
+
+
 
 void Personaje::initializePlayer()
 {
@@ -38,14 +46,11 @@ void Personaje::jumpPlayer()
     QPixmap jump2(":/imagenes/salto2.png");
     QPixmap jump3(":/imagenes/salto3.png");
     QPixmap base(":/imagenes/jugador1.png");
-    saltando = true;
-
-    if (jugar_nivel) {
+    if(jugar_nivel == true){
         if (collidesWithItem(parentItem()) && pos().y() < 850) {
             setPixmap(base);
             setPos(lugar_saltoX, lugar_saltoY);
             timer2->stop();
-            saltando = false;
             return;
         }
 
@@ -59,8 +64,8 @@ void Personaje::jumpPlayer()
                     subir = false;
                 }
             }
-        } else {
-            if (!colision) {
+        } else{
+            if(colision == false){
                 setPixmap(jump2);
                 setPos(pos().x() + 7, pos().y() + 9);
                 posX += 7;
@@ -69,30 +74,29 @@ void Personaje::jumpPlayer()
                     setPixmap(jump3);
                     subir = true;
                     salto = false;
-                    saltando = false;
                     timer2->stop();
-
-                    if (keysPressed.contains(Qt::Key_D)) {
-                        moveRight();
-                    }
                 }
-            } else {
-                qDebug() << pos().y();
+            }
+            else{
+                qDebug()<<pos().y();
                 setPixmap(base);
-                timer2->stop();
-                saltando = false;
+                timer2-> stop();
+                //subir = true;
             }
         }
-        if (pos().x() > 850 && !colision && posX < 8000) {
+        if(pos().x()>850 && colision == false && posX <8000){
             emit moveBackground(7);
             inicio = true;
         }
-        if (posX > 9000) {
+        if(posX >9000){
             jugar_nivel = false;
             win = true;
-            qDebug() << "terminarGanaste";
+            qDebug()<<"terminarGanaste";
+
         }
-    } else {
+
+    }
+    else{
         timer2->stop();
     }
 }
@@ -101,9 +105,8 @@ void Personaje::keyPressEvent(QKeyEvent *event)
 {
     keysPressed.insert(event->key());
     game = true;
-
-    if ((keysPressed.contains(Qt::Key_W) || (keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_D))) && !saltando) {
-        if (jugar_nivel) {
+    if (keysPressed.contains(Qt::Key_W) || (keysPressed.contains(Qt::Key_W) && keysPressed.contains(Qt::Key_D))) {
+        if(jugar_nivel == true){
             lugar_saltoX = pos().x();
             salto = true;
             subir = true;
@@ -111,28 +114,17 @@ void Personaje::keyPressEvent(QKeyEvent *event)
             if (!timer2->isActive()) {
                 timer2->start(18);
             }
-        } else {
+        }
+        else{
             timer2->stop();
         }
     }
 
-    if (keysPressed.contains(Qt::Key_D) && !colision && jugar_nivel && !saltando) {
-        moveRight();
-    }
-
-    if (!jugar_nivel) {
-        timer->stop();
-    }
-
-    if (colision) {
-        setPos(pos().x() - 20, pos().y());
-    }
 }
 
 void Personaje::keyReleaseEvent(QKeyEvent *event)
 {
     keysPressed.remove(event->key());
-
     game = false;
     if (salto) {
         QPixmap pixMap(":/imagenes/jugador1.png");
@@ -140,9 +132,8 @@ void Personaje::keyReleaseEvent(QKeyEvent *event)
     }
 }
 
-void Personaje::moveRight()
+void Personaje::updateMovement()
 {
-    game = true;
     QPixmap play_run1(":/imagenes/jugador2.png");
     QPixmap play_run2(":/imagenes/jugador3.png");
     QPixmap play_run3(":/imagenes/jugador4.png");
@@ -151,19 +142,29 @@ void Personaje::moveRight()
     QPixmap play_run6(":/imagenes/jugador7.png");
     QPixmap play_run7(":/imagenes/jugador8.png");
     QPixmap play_run8(":/imagenes/jugador9.png");
-    QPixmap pixmaps[8] = {play_run1, play_run2, play_run3, play_run4, play_run5, play_run6, play_run7, play_run8};
-    setPixmap(pixmaps[cont - 1]);
-    setPos(pos().x() + 10, pos().y());
-    posX += 10;
-
-    if (pos().x() > 850 && posX < 8000) {
-        inicio = true;
-        emit moveBackground(10);
-    }
-
-    if (posX > 9000) {
-        jugar_nivel = false;
-        win = true;
-        qDebug() << "terminaar ganaste";
+    if(!salto){
+        qDebug()<<colision;
+        if (keysPressed.contains(Qt::Key_D) && colision == false && jugar_nivel == true) {
+            game = true;
+            QPixmap pixmaps[8] = {play_run1, play_run2, play_run3, play_run4, play_run5, play_run6, play_run7, play_run8};
+            setPixmap(pixmaps[cont - 1]);
+            setPos(pos().x() + 10, pos().y());
+            posX += 10;
+            if(pos().x()>850 && posX<8000){
+                inicio = true;
+                emit moveBackground(10);
+            }
+            if(posX>9000){
+                jugar_nivel = false;
+                win = true;
+                qDebug()<<"terminaar"<<" ganaste";
+            }
+        }
+        if(jugar_nivel == false){
+            timer->stop();
+        }
+        if(colision == true){
+            setPos(pos().x() - 20, pos().y());
+        }
     }
 }

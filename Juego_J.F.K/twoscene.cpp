@@ -12,7 +12,7 @@
 Bala::Bala(bool especial, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent), especial(especial), angulo(0), velocidad(0), gravedad(5.0)
 {
-    setPixmap(QPixmap(":/imagenes/disparo.png"));
+    setPixmap(QPixmap(":/imagenes/disparo2.png"));
     setScale(3);
     if (especial) {
         angulo = QRandomGenerator::global()->bounded(360);
@@ -74,8 +74,16 @@ twoscene::twoscene(MainWindow *parent)
     temporizadorJuego->start(1000 / 60);
 
     QTimer::singleShot(60000, [this]() {
-        juegoPausado = true;
-        qDebug() << "Juego pausado después de 60 segundos";
+        if(final==false){
+            juegoPausado = true;
+            PMenu* menu = new PMenu("GANASTE", 2);
+            connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+            connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+            menu->setParent(mainWindow);
+            menu->move(672, 100);
+            menu->show();
+            qDebug() << "Juego pausado después de 60 segundos";
+        }
     });
 
     temporizadorEliminarPotenciador = new QTimer(this);
@@ -87,10 +95,26 @@ twoscene::twoscene(MainWindow *parent)
 
 void twoscene::keyPressEvent(QKeyEvent *event)
 {
+    keysPressed.insert(event->key());
     if (event->key() == Qt::Key_A) {
         carro->establecerDireccion(potenciadorActivo ? "izquierda_p" : "izquierda");
     } else if (event->key() == Qt::Key_D) {
         carro->establecerDireccion(potenciadorActivo ? "derecha_p" : "derecha");
+    }
+    if (keysPressed.contains(Qt::Key_P)) {
+        juegoPausado = true;
+        final=true;
+        PMenu* menu = new PMenu("Pausa", 2, true);
+        connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+        connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+        connect(menu, &PMenu::resume, this, [this]() {
+            juegoPausado = false;
+            final=false;
+        });
+        menu->setParent(mainWindow);
+        menu->move(672, 100);
+        menu->show();
+
     }
 }
 
@@ -98,6 +122,9 @@ void twoscene::keyReleaseEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_A || event->key() == Qt::Key_D) {
         carro->establecerDireccion("");
+    }
+    if(keysPressed.contains(Qt::Key_P)){
+        keysPressed.remove(event->key());
     }
 }
 
@@ -191,7 +218,14 @@ void twoscene::comprobarColisiones()
                     qDebug() << "Vida disminuida. Vida actual:" << vidas;
                     if (vidas == 0) {
                         juegoPausado = true;
+                        PMenu* menu = new PMenu("Perdiste", 2);
+                        connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+                        connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+                        menu->setParent(mainWindow);
+                        menu->move(672, 100);
+                        menu->show();
                         qDebug() << "Juego pausado porque la vida llegó a 0";
+                        final=true;
                     }
                 }
                 removeItem(bala);
