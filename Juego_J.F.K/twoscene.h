@@ -48,9 +48,10 @@ private slots:
 
 private:
     void comprobarColisiones();
-
+    void bloquearMovimientoYMostrarBalaFinal();
     MainWindow *mainWindow;
     jfk *carro;
+    QTimer temporizadorBalaFinal;
     QTimer *temporizadorBala;
     QTimer *temporizadorBalaEspecial;
     QTimer *temporizadorPotenciador;
@@ -58,12 +59,14 @@ private:
     QTimer *temporizadorEliminarPotenciador;
     QTimer *temporizadorTerminarPotenciador;
     QTimer singleShot;
+    Bala *balaFinal;
     int vidas;
     int puntuacion;
     bool juegoPausado;
     int tiempoTranscurrido;
     bool potenciadorActivo;
     bool final=false;
+    bool bloq_mov=false;
 
     QSet<int> keysPressed;
 };

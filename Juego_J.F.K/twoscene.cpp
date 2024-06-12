@@ -8,6 +8,7 @@
 #include <QRandomGenerator>
 #include <QtMath>
 #include <QDebug>
+#include <QString>
 
 Bala::Bala(bool especial, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent), especial(especial), angulo(0), velocidad(0), gravedad(5.0)
@@ -31,10 +32,7 @@ void Bala::advance(int phase)
         setPos(x(), y() + gravedad);
     }
 
-    if (y() > 1050) {
-        scene()->removeItem(this);
-        delete this;
-    }
+
 }
 
 bool Bala::esEspecial() const
@@ -74,17 +72,9 @@ twoscene::twoscene(MainWindow *parent)
     temporizadorJuego->start(1000 / 60);
 
     QTimer::singleShot(60000, [this]() {
-        if(final==false){
-            juegoPausado = true;
-            PMenu* menu = new PMenu("GANASTE", 2);
-            connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
-            connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
-            menu->setParent(mainWindow);
-            menu->move(672, 100);
-            menu->show();
-            qDebug() << "Juego pausado después de 60 segundos";
-        }
+        bloquearMovimientoYMostrarBalaFinal();
     });
+
 
     temporizadorEliminarPotenciador = new QTimer(this);
     connect(temporizadorEliminarPotenciador, &QTimer::timeout, this, &twoscene::eliminarPotenciador);
@@ -95,6 +85,8 @@ twoscene::twoscene(MainWindow *parent)
 
 void twoscene::keyPressEvent(QKeyEvent *event)
 {
+    if(bloq_mov) return;
+    if (juegoPausado) return;
     keysPressed.insert(event->key());
     if (event->key() == Qt::Key_A) {
         carro->establecerDireccion(potenciadorActivo ? "izquierda_p" : "izquierda");
@@ -103,30 +95,31 @@ void twoscene::keyPressEvent(QKeyEvent *event)
     }
     if (keysPressed.contains(Qt::Key_P)) {
         juegoPausado = true;
-        final=true;
+        final = true;
         PMenu* menu = new PMenu("Pausa", 2, true);
         connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
         connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
         connect(menu, &PMenu::resume, this, [this]() {
             juegoPausado = false;
-            final=false;
+            final = false;
         });
         menu->setParent(mainWindow);
         menu->move(672, 100);
         menu->show();
-
     }
 }
 
 void twoscene::keyReleaseEvent(QKeyEvent *event)
 {
+    if(juegoPausado) return;
     if (event->key() == Qt::Key_A || event->key() == Qt::Key_D) {
         carro->establecerDireccion("");
     }
-    if(keysPressed.contains(Qt::Key_P)){
+    if (keysPressed.contains(Qt::Key_P)) {
         keysPressed.remove(event->key());
     }
 }
+
 
 void twoscene::generarBala()
 {
@@ -207,18 +200,64 @@ void twoscene::actualizarJuego()
     }
 }
 
+void twoscene::bloquearMovimientoYMostrarBalaFinal()
+{
+    if (final) return;
+
+    foreach (QGraphicsItem *item, items()) {
+        if (Bala *bala = dynamic_cast<Bala *>(item)) {
+            removeItem(bala);
+            delete bala;
+        }
+    }
+    bloq_mov=true;
+    carro->establecerVelocidad(0);
+    carro->reiniciarImagen();
+    potenciadorActivo = true;
+    temporizadorPotenciador->stop();
+    temporizadorEliminarPotenciador->stop();
+    temporizadorTerminarPotenciador->stop();
+    balaFinal = new Bala(false);
+    balaFinal->setPixmap(QPixmap(":/imagenes/disparo2.png"));
+    balaFinal->setScale(10);
+    balaFinal->setPos(carro->x() + 15, -200);
+    addItem(balaFinal);
+
+
+}
+
+
 void twoscene::comprobarColisiones()
 {
     QList<QGraphicsItem *> elementosColisionados = carro->collidingItems();
     for (QGraphicsItem *item : elementosColisionados) {
-        if (Bala *bala = dynamic_cast<Bala *>(item)) {
+        if (item == balaFinal) {
+            juegoPausado = true;
+            QString puntuacionn = QString::number(puntuacion);
+            PMenu* menu = new PMenu("   GANASTE \n      Puntos: \n             " + puntuacionn, 2);
+            connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
+            connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
+            menu->setParent(mainWindow);
+            menu->move(672, 100);
+            menu->show();
+            qDebug() << "Juego pausado después de 60 segundos y golpe de bala";
+            removeItem(balaFinal);
+            delete balaFinal;
+            final = true;
+        }
+        else if (Bala *bala = dynamic_cast<Bala *>(item)) {
             if (!juegoPausado) {
                 if (!potenciadorActivo && vidas > 0) {
                     vidas--;
+                    puntuacion-=10;
+                    if(puntuacion<0){
+                        puntuacion=0;
+                    }
                     qDebug() << "Vida disminuida. Vida actual:" << vidas;
                     if (vidas == 0) {
                         juegoPausado = true;
-                        PMenu* menu = new PMenu("Perdiste", 2);
+                        QString puntuacionn = QString::number(puntuacion);
+                        PMenu* menu = new PMenu("   Perdiste \n      Puntos: \n           " + puntuacionn, 2);
                         connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
                         connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
                         menu->setParent(mainWindow);
@@ -248,7 +287,7 @@ void twoscene::comprobarColisiones()
 
     foreach (QGraphicsItem *item, items()) {
         if (Bala *bala = dynamic_cast<Bala *>(item)) {
-            if (bala->y() > 1050) {
+            if (bala->y() > 900) {
                 puntuacion += 5;
                 qDebug() << "Bala eliminada al tocar el suelo. Puntuación actual:" << puntuacion;
                 removeItem(bala);
@@ -257,3 +296,4 @@ void twoscene::comprobarColisiones()
         }
     }
 }
+
