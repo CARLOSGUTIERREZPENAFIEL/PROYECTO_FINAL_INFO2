@@ -64,5 +64,6 @@
         <file>imagenes/carroIZQ2p.png</file>
         <file>imagenes/disparo2.png</file>
         <file>imagenes/icono.png</file>
+        <file>imagenes/escenario_rejas.png</file>
     </qresource>
 </RCC>

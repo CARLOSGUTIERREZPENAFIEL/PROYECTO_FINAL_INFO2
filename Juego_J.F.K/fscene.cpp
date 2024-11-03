@@ -94,6 +94,7 @@ void FScene::keyPressEvent(QKeyEvent *e) {
     if (keysPressed.contains(Qt::Key_P)) {
         progressBar->hide();
         progressLabel->hide();
+        highSpeedTimer->stop();
         PMenu* menu = new PMenu("Pausa", 1, true);
         connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);
         connect(menu, &PMenu::goToMenu, mainWindow, &MainWindow::showInitialScene);
@@ -104,6 +105,9 @@ void FScene::keyPressEvent(QKeyEvent *e) {
             progressBar->show();
             progressLabel->show();
             potSpawnTimer->start();
+            if(vel_y>=40){
+                highSpeedTimer->start();
+            }
         });
         menu->setParent(mainWindow);
         menu->move(672, 100);
@@ -195,12 +199,6 @@ void FScene::acelerar() {
     }
     if (win == true) {
         vel_y = 10;
-        foreach (QGraphicsItem *item, items()) {
-            if (item->type() == QGraphicsPixmapItem::Type && item != car && item != Avion) {
-                removeItem(item);
-                delete item;
-            }
-        }
         if (car->collidesWithItem(Avion)) {
             PMenu* menu = new PMenu("GANASTE", 1);
             connect(menu, &PMenu::retry, mainWindow, &MainWindow::onLevelSelected);

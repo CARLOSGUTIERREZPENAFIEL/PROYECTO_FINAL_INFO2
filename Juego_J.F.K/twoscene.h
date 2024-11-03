@@ -67,6 +67,7 @@ private:
     bool potenciadorActivo;
     bool final=false;
     bool bloq_mov=false;
+    bool derrota=false;
 
     QSet<int> keysPressed;
 };

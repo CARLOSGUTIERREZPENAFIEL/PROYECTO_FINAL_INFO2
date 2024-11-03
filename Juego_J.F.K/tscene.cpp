@@ -10,12 +10,6 @@ TScene::TScene(MainWindow *parent) : mainWindow(parent) {
     QImage imagen_fondo(":/imagenes/escenario.png");
     QBrush fondo_escenario(imagen_fondo);
     setBackgroundBrush(fondo_escenario);
-    QPixmap f(":/imagenes/disparo.png");
-    fin = new QGraphicsPixmapItem();
-    addItem(fin);
-    fin->setPixmap(f);
-    fin->setScale(1);
-    fin->setPos(1850, 870);
 
     connect(personaje1, &Personaje::moveBackground, this, &TScene::onMoveBackground);
     timer = new QTimer(this);
@@ -244,7 +238,7 @@ void TScene::onMoveBackground(int dx) {
 }
 
 void TScene::crear_obs() {
-    if (personaje1->posX > 850) {
+    if ((personaje1->posX > 850) && (personaje1->posX < 8000)) {
         if (personaje1->game) {
             QPixmap cj(":/imagenes/caja.png");
             caja = new QGraphicsPixmapItem();
@@ -271,12 +265,12 @@ void TScene::verificar_colision() {
     progreso = personaje1->posX * 100 / 9000;
     progressBar->setValue(progreso);
     progressLabel->setText(QString::number(progreso) + "%");
-
     if (personaje1->win) {
+        QBrush fondo_escenario_rejas(QImage(":/imagenes/escenario_rejas.png"));
+        setBackgroundBrush(fondo_escenario_rejas);
         Police->stop();
         obs_timer->stop();
         coli->stop();
-        timer->stop();
         fire->stop();
         progressBar->hide();
         progressLabel->hide();

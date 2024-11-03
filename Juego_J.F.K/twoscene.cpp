@@ -72,7 +72,9 @@ twoscene::twoscene(MainWindow *parent)
     temporizadorJuego->start(1000 / 60);
 
     QTimer::singleShot(60000, [this]() {
-        bloquearMovimientoYMostrarBalaFinal();
+        if(derrota==false){
+            bloquearMovimientoYMostrarBalaFinal();
+        }
     });
 
 
@@ -263,6 +265,7 @@ void twoscene::comprobarColisiones()
                         menu->setParent(mainWindow);
                         menu->move(672, 100);
                         menu->show();
+                        derrota=true;
                         qDebug() << "Juego pausado porque la vida llegó a 0";
                         final=true;
                     }

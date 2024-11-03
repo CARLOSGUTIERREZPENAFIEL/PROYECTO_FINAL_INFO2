@@ -65,19 +65,19 @@ Obstacle::Obstacle(const QString &filePath, qreal pos_obst, int vel_obst, qreal 
     setScale(0.18);
 
     int randomX;
-    if (rand() % 2 == 0) { // 50% chance for each range
-        randomX = 640 + (rand() % (890 - 640)); // Range 640 to 890
-        int randomImageIndex = 1 + (rand() % 6); // Random index between 1 and 6
+    if (rand() % 2 == 0) {
+        randomX = 640 + (rand() % (890 - 640));
+        int randomImageIndex = 1 + (rand() % 6);
         obstaclePixmap = QPixmap(QString(":/imagenes/img%1.png").arg(randomImageIndex));
     } else {
-        randomX = 1150 + (rand() % (1370 - 1150)); // Range 1150 to 1370
-        int randomImageIndex = 7 + (rand() % 6); // Random index between 7 and 12
+        randomX = 1150 + (rand() % (1370 - 1150));
+        int randomImageIndex = 7 + (rand() % 6);
         obstaclePixmap = QPixmap(QString(":/imagenes/img%1.png").arg(randomImageIndex));
-        moveUp = true; // Set the flag to true if in the second range
+        moveUp = true;
     }
 
     setPixmap(obstaclePixmap);
-    setPos(randomX, pos_obst - 200); // Start at the top
+    setPos(randomX, pos_obst - 200);
     connect(moveTimer, &QTimer::timeout, this, &Obstacle::moveDown);
 }
 

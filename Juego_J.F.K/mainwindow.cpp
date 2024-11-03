@@ -97,24 +97,18 @@ void MainWindow::onLevelSelected(int level)
     qDebug() << "nivel seleccionado:" << level;
 
     if (First_Scene) {
-        qDebug() << "elimando First_Scene";
+        qDebug() << "elimino1";
         delete First_Scene;
         First_Scene = nullptr;
         removeVelocimetroView();
-
-    }
-    if (Vel_FScene) {
-        qDebug() << "elimando Vel_FScene";
-        delete Vel_FScene;
-        Vel_FScene = nullptr;
     }
     if (Third_Scene) {
-        qDebug() << "elimando Third_Scene";
+        qDebug() << "elimino2";
         delete Third_Scene;
         Third_Scene = nullptr;
     }
     if (Two_Scene) {
-        qDebug() << "eliminando Two_Scene";
+        qDebug() << "elimino3";
         delete Two_Scene;
         Two_Scene = nullptr;
     }
@@ -170,10 +164,12 @@ void MainWindow::onLevelSelected(int level)
 void MainWindow::removeVelocimetroView()
 {
     if (View_Velocimetro) {
+        qDebug() << "elimonvelview";
         delete View_Velocimetro;
         View_Velocimetro = nullptr;
     }
     if (velocimetro) {
+        qDebug() << "elimonvel";
         delete velocimetro;
         velocimetro = nullptr;
     }
@@ -182,19 +178,18 @@ void MainWindow::removeVelocimetroView()
 void MainWindow::showInitialScene()
 {
     if (First_Scene) {
+        qDebug() << "elimino1";
         delete First_Scene;
         First_Scene = nullptr;
         removeVelocimetroView();
     }
-    if (Vel_FScene) {
-        delete Vel_FScene;
-        Vel_FScene = nullptr;
-    }
     if (Third_Scene) {
+        qDebug() << "elimino2";
         delete Third_Scene;
         Third_Scene = nullptr;
     }
     if (Two_Scene) {
+        qDebug() << "elimino3";
         delete Two_Scene;
         Two_Scene = nullptr;
     }

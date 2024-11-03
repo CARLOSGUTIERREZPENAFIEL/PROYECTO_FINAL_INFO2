@@ -143,7 +143,6 @@ void Personaje::updateMovement()
     QPixmap play_run7(":/imagenes/jugador8.png");
     QPixmap play_run8(":/imagenes/jugador9.png");
     if(!salto){
-        qDebug()<<colision;
         if (keysPressed.contains(Qt::Key_D) && colision == false && jugar_nivel == true) {
             game = true;
             QPixmap pixmaps[8] = {play_run1, play_run2, play_run3, play_run4, play_run5, play_run6, play_run7, play_run8};
@@ -154,6 +153,7 @@ void Personaje::updateMovement()
                 inicio = true;
                 emit moveBackground(10);
             }
+
             if(posX>9000){
                 jugar_nivel = false;
                 win = true;
